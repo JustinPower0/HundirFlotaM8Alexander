@@ -48,7 +48,7 @@ app.add_middleware(
 )
 
 # Funciones FastApi
-@app.get("/matriz/{dim}")
+@app.get("/partida/{dim}", tags=["Partida"])
 def devolver_matriz(dim: int):
     global partida,contador
     if dim < 7 or dim > 20:
