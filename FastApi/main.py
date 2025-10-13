@@ -76,22 +76,17 @@ def agregarbarcos(partida, partida_id):
             if libre:
                 for x, y in posiciones:
                     matriz[x][y] = tipo
-
                 if nombre not in barcos:
                     barcos[nombre] = []
-
                 barcos[nombre].append({
                     "id": id_por_tipo[nombre],
                     "posiciones": posiciones
                 })
-
                 id_por_tipo[nombre] += 1
                 estado["ocupadas"] += longitud
                 continuar = True
                 break
-
             intentos += 1
-
         return continuar
 
     for nombre, info in barcos_definicion.items():
