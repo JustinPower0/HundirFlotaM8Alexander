@@ -2,25 +2,11 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import Optional
-import random
-
-# Variable
-partida = {}
-matriz = []
-contador = 1
-barcos_definicion = {
-    "submari": {"id": 1, "longitud": 1},
-    "destructor": {"id": 2, "longitud": 2},
-    "creuer": {"id": 3, "longitud": 3},
-    "cuirassat": {"id": 4, "longitud": 4},
-    "portaavions": {"id": 5, "longitud": 5}
-}
-
 
 # Funciones Normales
 
 # Funcion Crear Matriz
-def crearMatriz(filas,columnas):
+def crearMatriz(dim):
     matriz = []
     for i in range(filas):
         fila = []
@@ -30,8 +16,8 @@ def crearMatriz(filas,columnas):
     return matriz
 
 # Funcion Agrergar Matriz Partida
-def agregarMatrizPartida(partida, filas, columnas, contador):
-    matriz = crearMatriz(filas,columnas)
+def agregarMatrizPartida(partida, dim, contador):
+    matriz = crearMatriz(dim)
     partida[contador] = matriz
     return contador + 1, matriz
 
@@ -41,57 +27,41 @@ def agregarbarcos(partida, partida_id):
     if matriz is None:
         return {"error": "Partida no encontrada"}
 
-    filas = len(matriz)
-    columnas = len(matriz[0])
-    total_casillas = filas * columnas
+    dim = len(matriz)
+    total_casillas = dim * dim
     limite_ocupacion = int(total_casillas * 0.3)
 
     barcos = {}
     estado = {"ocupadas": 0}
-    id_por_tipo = {nombre: 1 for nombre in barcos_definicion}
 
     def colocar_barco(nombre, info):
         tipo = info["id"]
         longitud = info["longitud"]
         intentos = 0
         continuar = False
-
         while intentos < 100:
             orientacion = random.choice(["horizontal", "vertical"])
             if orientacion == "horizontal":
-                fila = random.randint(0, filas - 1)
-                col = random.randint(0, columnas - longitud)
+                fila = random.randint(0, dim - 1)
+                col = random.randint(0, dim - longitud)
                 posiciones = [(fila, col + i) for i in range(longitud)]
             else:
-                fila = random.randint(0, filas - longitud)
-                col = random.randint(0, columnas - 1)
+                fila = random.randint(0, dim - longitud)
+                col = random.randint(0, dim - 1)
                 posiciones = [(fila + i, col) for i in range(longitud)]
-
             libre = True
             for x, y in posiciones:
                 if matriz[x][y] != 0:
                     libre = False
                     break
-
             if libre:
                 for x, y in posiciones:
                     matriz[x][y] = tipo
-
-                if nombre not in barcos:
-                    barcos[nombre] = []
-
-                barcos[nombre].append({
-                    "id": id_por_tipo[nombre],
-                    "posiciones": posiciones
-                })
-
-                id_por_tipo[nombre] += 1
+                barcos.setdefault(nombre, []).extend(posiciones)
                 estado["ocupadas"] += longitud
                 continuar = True
                 break
-
             intentos += 1
-
         return continuar
 
     for nombre, info in barcos_definicion.items():
@@ -125,14 +95,16 @@ app.add_middleware(
     allow_headers=["*"],    # permite todas las cabeceras
 )
 
+arrayBarcos = [barco1, barco2, barco3, barco4, barco5]
+
+cantidadBarcos=[barco1]
 # Funciones FastApi
-@app.get("/partida/{filas}/{columnas}", tags=["Partida"])
-def devolver_matriz(filas: int,columnas: int):
+@app.get("/partida/{dim}", tags=["Partida"])
+def devolver_matriz(dim: int):
     global partida,contador
-    contador, matriz = agregarMatrizPartida(partida, filas,columnas, contador)
+    contador, matriz = agregarMatrizPartida(partida, dim, contador)
     return {"id": contador - 1, "matriz": matriz}
 
-@app.get("/barcos/{partida_id}", tags=["Barcos"])
-def colocar_barcos(partida_id: int):
-    resultado = agregarbarcos(partida, partida_id)
-    return resultado
+@app.get("/saludo/{nombre}")
+def read_item(nombre: str):
+    return {"saludo": f"Hola {nombre}!"}
