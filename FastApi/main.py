@@ -3,11 +3,11 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import Optional
 import random
+import uuid
 
 # Variable
 partida = {}
 matriz = []
-contador = 1
 barcos_definicion = {
     "submari": {"id": 1, "longitud": 1},
     "destructor": {"id": 2, "longitud": 2},
@@ -30,10 +30,12 @@ def crearMatriz(filas,columnas):
     return matriz
 
 # Funcion Agrergar Matriz Partida
-def agregarMatrizPartida(partida, filas, columnas, contador):
+def agregarMatrizPartida(partida, filas, columnas,nombre_usuario):
     matriz = crearMatriz(filas,columnas)
-    partida[contador] = matriz
-    return contador + 1, matriz
+    partida_id = str(uuid.uuid4())
+    partida[partida_id] = matriz
+    partida[nombre_usuario] = nombre_usuario
+    return partida_id, matriz,nombre_usuario
 
 # Funcion Agregar Barcos
 def agregarbarcos(partida, partida_id):
@@ -121,13 +123,13 @@ app.add_middleware(
 )
 
 # Funciones FastApi
-@app.get("/partida/{filas}/{columnas}", tags=["Partida"])
-def devolver_matriz(filas: int,columnas: int):
-    global partida,contador
-    contador, matriz = agregarMatrizPartida(partida, filas,columnas, contador)
-    return {"id": contador - 1, "matriz": matriz}
+@app.get("/partida/{filas}/{columnas}/{nombre_usuario}", tags=["Partida"])
+def devolver_matriz(filas: int,columnas: int,nombre_usuario:str):
+    global partida
+    partida_id, matriz,nombre_usuario = agregarMatrizPartida(partida, filas,columnas,nombre_usuario)
+    return {"id": partida_id,"nom": nombre_usuario, "matriz": matriz}
 
 @app.get("/barcos/{partida_id}", tags=["Barcos"])
-def colocar_barcos(partida_id: int):
+def colocar_barcos(partida_id: str):
     resultado = agregarbarcos(partida, partida_id)
     return resultado
