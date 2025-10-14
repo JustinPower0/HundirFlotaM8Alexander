@@ -1,0 +1,10 @@
+ #formulario {
+    display: flex;
+    flex-direction: column; /* los coloca en vertical */
+    width: 200px; /* opcional, ajusta el ancho */
+    gap: 8px; /* espacio entre los elementos */
+  }
+
+  #tablero tr{
+    height: 30px;
+  }

@@ -1,4 +1,5 @@
 let tabla = document.getElementById("tablero");
+let guardar = document.getElementById("guardar");
 
 
 tabla.addEventListener("click", (event) => {
@@ -17,28 +18,26 @@ tabla.addEventListener("click", (event) => {
 })
 
 
-let celdas = ""
-let dimX = 6, dimY = 5;
+function crearTabla(matriz) {
+    const tbody = document.getElementById("#tablero tbody");
+    tbody.innerHTML = "";
+    let celdas = ""
+    let dimX = 6, dimY = 5;
 
-for (let i = 0; i < dimX; i++) {
-    celdas += "<tr>"
-    for (let j = 0; j < dimY; j++) {
-        celdas += "<td id=" + i + j + ">*</td>"
+    for (let i = 0; i < matriz.length; i++) {
+        const fila = document.createElement("tr");
+        for (let j = 0; j < matriz[i].length; j++) {
+            const celda = document.createElement("td");
+            celda.setAttribute(i);
+            celda.setAttribute(j);
+            fila.appendChild(celda);
+        }
+        tbody.appendChild(fila);
     }
-    celdas += "</tr>"
-}
-document.getElementById("tablero").innerHTML = celdas;
+    document.getElementById("tablero").innerHTML = celdas;
+ }
 
-for (let i = 0; i < dimX; i++) {
-    for (let j = 0; j < dimY; j++) {
-        document.getElementById(i + "" + j).addEventListener("click", (event) => {
-            event.target.innerHTML = 1;
 
-            fetch()
-        });
-    }
-}
-
-//pedir al usuario para hacer  la matrix fila columna y nombre usuario
-//para hacer la peticion es con get 
-
+ addEventListener("click", (event) => {
+     event.preventDefault();
+ });
