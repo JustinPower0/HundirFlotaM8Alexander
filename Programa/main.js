@@ -1,5 +1,7 @@
 let tabla = document.getElementById("tablero");
 let guardar = document.getElementById("guardar");
+let estadisticas = document.getElementById("estadisticas");
+
 
 
 tabla.addEventListener("click", (event) => {
@@ -16,6 +18,17 @@ tabla.addEventListener("click", (event) => {
     // } else {
     // }
 })
+
+estadisticas.addEventListener("click", (event) => {
+    event.preventDefault();
+    fetch("http://127.0.0.1:8000/estadisticas" )
+        .then(response => response.json())                 //fetch para tener las estadisticas
+        .then(data => {
+            console.table(data);
+        })
+        .catch(error => console.error('Error:', error));
+})
+
 
 
 function crearTabla(matriz) {
@@ -35,9 +48,4 @@ function crearTabla(matriz) {
         tbody.appendChild(fila);
     }
     document.getElementById("tablero").innerHTML = celdas;
- }
-
-
- addEventListener("click", (event) => {
-     event.preventDefault();
- });
+}

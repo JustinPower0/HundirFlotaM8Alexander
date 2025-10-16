@@ -4,6 +4,7 @@ from pydantic import BaseModel
 from typing import Optional
 import random
 import uuid
+import json
 
 # Variable
 partida = {}
@@ -115,7 +116,7 @@ origins = [
 
 app.add_middleware(
     CORSMiddleware,
-    # allow_origins=["*"],  # permite cualquier origen (no recomendable en producción)
+     #allow_origins=["*"],  # permite cualquier origen (no recomendable en producción)
     allow_origins=origins,  # permite solo esos orígenes
     allow_credentials=True,
     allow_methods=["*"],    # permite todos los métodos (GET, POST, etc.)
@@ -133,3 +134,9 @@ def devolver_matriz(filas: int,columnas: int,nombre_usuario:str):
 def colocar_barcos(partida_id: str):
     resultado = agregarbarcos(partida, partida_id)
     return resultado
+
+@app.get("/estadisticas", tags=["Estadisticas"])                     #funcion get para tener las estadisticas
+def leerEstadisticas():
+    with open("../data/stats.json", "r") as archivo:
+        datos = json.load(archivo)
+        return datos

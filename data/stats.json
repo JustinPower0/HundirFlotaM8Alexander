@@ -1,4 +1,4 @@
- {
+{
     "total_partides": 12,
     "millor_puntuacio": 780,
     "millor_jugador": "anònim",
@@ -12,5 +12,8 @@
             "data": "2025-09-15T17:20:31Z",
             "duracio_ms": 143000
         }
-    ]
-}
+    ]}
+
+
+
+
