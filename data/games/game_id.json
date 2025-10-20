@@ -1,5 +1,5 @@
 {
-	"game_id": "G-abc123",
+"game_id": "G-abc123",
 "files": 10,
 "columnes": 10,
 "tauler": "array bidimensional o string codificat",
@@ -23,7 +23,7 @@
 "vaixells_enfonsats": 0,
 "caselles_destapades": 0,
 "estat": "en_curs|victoria|derrota|abandonada",
- 	"jugador": "anònim",
- 	"data_inici": "ISO-8601",
+"jugador": "anònim",
+"data_inici": "ISO-8601",
 "data_fi": null
  }

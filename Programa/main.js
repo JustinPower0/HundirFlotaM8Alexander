@@ -1,12 +1,19 @@
-let guardar = document.getElementById("guardar")
-let estadisticas = document.getElementById("estadisticas")
+let tabla = document.getElementById("tablero");
+let guardar = document.getElementById("guardar");
+let estadisticas = document.getElementById("estadisticas");
+let estado_juego = document.getElementById("estado_juego");
+
+const puntuacion_Base = 1000;
+const disparar = 10;
+const bonus_tocar = 20;
+const bonus_Hundir_Barco = 50;
+const penalizacion_Segundo = 1;
 
 guardar.addEventListener("click", (event) => {
     event.preventDefault()
     const nombre = document.getElementById("nombre").value
     const ampliada = document.getElementById("ampliada").value
     const altura = document.getElementById("altura").value
-
     if (nombre == "" || ampliada == "" || altura == "") {
 
     }
@@ -61,6 +68,16 @@ estadisticas.addEventListener("click", (event) => {
         .catch(error => console.error('Error:', error))
 })
 
+
+document.addEventListener("DOMContentLoaded", () => {
+    fetch("http://127.0.0.1:8000/estado_juego")
+        .then(response => response.json())
+        .then(data => {
+            console.table(data);
+        })
+        .catch(error => console.error('Error:', error));
+});
+
 function crearTabla(matriz) {
     const tablero = document.querySelector("#tablero tbody")
     tablero.innerHTML = ""
@@ -82,4 +99,28 @@ function crearTabla(matriz) {
 
         tablero.appendChild(fila)
     }
+
+
+function calcularPuntuacio(joc) {
+
+    let puntuacio = puntuacion_Base;
+
+    puntuacio -= joc.disparos * disparar;
+
+    // Bonus por tocar casella
+    puntuacio += joc.casillasTocadas * bonus_tocar;
+
+    // Bonus por hundir Barco
+    puntuacio += joc.vaixellsEnfonsats * bonus_Hundir_Barco;
+
+    // Penalización por tiempo 
+    puntuacio -= joc.segons * penalizacion_Segundo;
+
+    // Si abandonó
+    if (joc.abandonat) {
+        puntuacio = 0; // regla estricta
+    }
+
+    return puntuacio;
+}
 }

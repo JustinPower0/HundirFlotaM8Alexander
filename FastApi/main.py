@@ -155,3 +155,9 @@ def tocado(partida_id : str, x : int, y: int):
         return {"resultado": "Agua"}
     else:
         return{"resultado" : "impacto", "tipo_barco" : valor}
+    
+@app.get("/estado_juego",tags=["Estado_Juego"])
+def estado_juego():
+        with open("../data/games/game_id.json","r") as archivos:
+            dato=json.load(archivos)
+            return dato
