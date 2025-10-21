@@ -10,16 +10,48 @@
 </head>
 
 <body>
-    <div id=formulario>
-        <h3>Configuracion del Juego
+    <div id="formulario">
+        <h4>Configuració del Joc</h4>
+        <div class="campo">
+            <label for="nombre">Nombre</label>
             <input type="text" id="nombre" placeholder="Escribe tu nombre">
-            <input type="number" id="ampliada" placeholder="Numero entre 7 y20">
-            <input type="number" id="altura" placeholder="Numero entre 7 y20">
-            <button id="guardar">Guardar</button>
-            <button id="estadisticas">estadisticas</button>
+        </div>
+
+        <div id="elegir">
+            <div class="campo">
+                <label for="amplada">Amplada</label>
+                <input type="number" id="ampliada" value="10" min="8" max="20">
+            </div>
+            <div class="campo">
+                <label for="alcada">Alçada</label>
+                <input type="number" id="altura" value="10" min="8" max="20">
+            </div>
+        </div>
+
+        <div class="campo">
+            <label for="vaixells">Num vaixells (<span id="valorVaixells">6</span>)</label>
+            <input type="range" id="vaixells" min="1" max="10" value="6">
+        </div>
+
+        <div class="campo dificultad">
+            <label>Difficulty</label>
+            <div class="nivells">
+                <label><input type="radio" name="dificultat" value="easy"> Easy</label>
+                <label><input type="radio" name="dificultat" value="medium" checked> Medium</label>
+                <label><input type="radio" name="dificultat" value="hard"> Hard</label>
+            </div>
+        </div>
+
+        <div id="botones">
+            <button id="guardar" class="btn azul">Start Game</button>
+            <button class="btn blanco">Restart Game</button>
+            <button class="btn rojo">Abandon Game</button>
+        </div>
     </div>
-    
-    <div id=estado_juego>    
+
+
+
+    <div id=estado_juego>
     </div>
     <table id="tablero">
         <tbody></tbody>

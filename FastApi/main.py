@@ -6,6 +6,7 @@ import random
 import uuid
 import json
 
+
 # Variable
 partida = {}
 matriz = []
