@@ -34,16 +34,20 @@ def crearMatriz(filas,columnas):
 def agregarMatrizPartida(partida, filas, columnas,nombre_usuario):
     matriz = crearMatriz(filas,columnas)
     partida_id = str(uuid.uuid4())
-    partida[partida_id] = matriz
-    partida[nombre_usuario] = nombre_usuario
+    partida[partida_id] = {
+        "matriz": matriz,
+        "jugador": nombre_usuario,
+        "barcos": {}
+    }
     return partida_id, matriz,nombre_usuario
 
 # Funcion Agregar Barcos
 def agregarbarcos(partida, partida_id):
-    matriz = partida.get(partida_id)
-    if matriz is None:
+    datos = partida.get(partida_id)
+    if datos is None:
         return {"error": "Partida no encontrada"}
-
+    
+    matriz = datos["matriz"]
     filas = len(matriz)
     columnas = len(matriz[0])
     total_casillas = filas * columnas
@@ -102,7 +106,7 @@ def agregarbarcos(partida, partida_id):
         if estado["ocupadas"] + info["longitud"] > limite_ocupacion:
             break
         colocar_barco(nombre, info)
-
+    datos["barcos"] = barcos
     return {"matriz": matriz, "barcos": barcos}
 
 # Crear la aplicación
@@ -141,20 +145,46 @@ def leerEstadisticas():
         datos = json.load(archivo)
         return datos
 
-@app.get("/tocados/{partida_id}/{x}/{y}")
-def tocado(partida_id : str, x : int, y: int):
-    matriz = partida.get(partida_id)
-    if matriz is None:
-        return{"error" : "No hay matriz"}
-    
+@app.get("/tocados/{partida_id}/{x}/{y}", tags=["Disparo"])
+def tocado(partida_id: str, x: int, y: int):
+    datos = partida.get(partida_id)
+    if not datos:
+        return {"error": "No hay partida"}
+
+    matriz = datos["matriz"]
+    barcos = datos["barcos"]
     if x < 0 or x >= len(matriz) or y < 0 or y >= len(matriz[0]):
-        return{"error": "Cordenadas fuera de matriz"}
-    
+        return {"error": "Coordenadas fuera de matriz"}
+
+
+    if matriz[x][y] == "X":
+        return {"resultado": "Ya fue tocado"}
+
     valor = matriz[x][y]
+    matriz[x][y] = "X"
+
     if valor == 0:
         return {"resultado": "Agua"}
-    else:
-        return{"resultado" : "impacto", "tipo_barco" : valor}
+
+    for tipo, lista in barcos.items():
+        for barco in lista:
+            if [x, y] in barco["posiciones"]:
+                barco["posiciones"].remove([x, y])
+                if len(barco["posiciones"]) == 0:
+                    return {
+                        "resultado": "Hundido",
+                        "tipo_barco": tipo,
+                        "id_barco": barco["id"],
+                        "ultima_posicion": [x, y]
+                    }
+                else:
+                    return {
+                        "resultado": "Impacto",
+                        "tipo_barco": tipo,
+                        "id_barco": barco["id"]
+                    }
+                
+    return {"resultado": "Impacto"}
     
 @app.get("/estado_juego",tags=["Estado_Juego"])
 def estado_juego():

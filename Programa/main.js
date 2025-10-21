@@ -39,14 +39,24 @@ guardar.addEventListener("click", (event) => {
                         .then(res => res.json())
                         .then(data => {
                             celda.classList.remove("oculto")
-                            celda.setAttribute("class", celda.className + " desactivada")
+                            celda.setAttribute("data-activa", "false")
 
                             if (data.resultado === "Agua") {
                                 celda.setAttribute("class", "agua")
-                                celda.textContent = "O"
-                            } else if (data.resultado === "impacto") {
+                                const textoO = document.createTextNode("O")
+                                celda.appendChild(textoO)
+                            } else if (data.resultado === "Impacto") {
                                 celda.setAttribute("class", "impacto")
-                                celda.textContent = "X"
+                                const textoX = document.createTextNode("X")
+                                celda.appendChild(textoX)
+                            } else if (data.resultado === "Hundido") {
+                                const i = data.ultima_posicion[0];
+                                const j = data.ultima_posicion[1];
+                                const celdaFinal = document.querySelector(`td[data-x="${i}"][data-y="${j}"]`);
+                                if (celdaFinal) {
+                                    celdaFinal.setAttribute("style", "background-color: black; color: white;");
+                                    celdaFinal.textContent = "X";
+                                }
                             }
                         })
                         .catch(err => {
@@ -101,26 +111,26 @@ function crearTabla(matriz) {
     }
 
 
-function calcularPuntuacio(joc) {
+    function calcularPuntuacio(joc) {
 
-    let puntuacio = puntuacion_Base;
+        let puntuacio = puntuacion_Base;
 
-    puntuacio -= joc.disparos * disparar;
+        puntuacio -= joc.disparos * disparar;
 
-    // Bonus por tocar casella
-    puntuacio += joc.casillasTocadas * bonus_tocar;
+        // Bonus por tocar casella
+        puntuacio += joc.casillasTocadas * bonus_tocar;
 
-    // Bonus por hundir Barco
-    puntuacio += joc.vaixellsEnfonsats * bonus_Hundir_Barco;
+        // Bonus por hundir Barco
+        puntuacio += joc.vaixellsEnfonsats * bonus_Hundir_Barco;
 
-    // Penalización por tiempo 
-    puntuacio -= joc.segons * penalizacion_Segundo;
+        // Penalización por tiempo 
+        puntuacio -= joc.segons * penalizacion_Segundo;
 
-    // Si abandonó
-    if (joc.abandonat) {
-        puntuacio = 0; // regla estricta
+        // Si abandonó
+        if (joc.abandonat) {
+            puntuacio = 0; // regla estricta
+        }
+
+        return puntuacio;
     }
-
-    return puntuacio;
-}
 }
