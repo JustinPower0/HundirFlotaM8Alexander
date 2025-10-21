@@ -39,14 +39,24 @@ guardar.addEventListener("click", (event) => {
                         .then(res => res.json())
                         .then(data => {
                             celda.classList.remove("oculto")
-                            celda.setAttribute("class", celda.className + " desactivada")
+                            celda.setAttribute("data-activa", "false")
 
                             if (data.resultado === "Agua") {
                                 celda.setAttribute("class", "agua")
-                                celda.textContent = "O"
-                            } else if (data.resultado === "impacto") {
+                                const textoO = document.createTextNode("O")
+                                celda.appendChild(textoO)
+                            } else if (data.resultado === "Impacto") {
                                 celda.setAttribute("class", "impacto")
-                                celda.textContent = "X"
+                                const textoX = document.createTextNode("X")
+                                celda.appendChild(textoX)
+                            } else if (data.resultado === "Hundido") {
+                                const i = data.ultima_posicion[0];
+                                const j = data.ultima_posicion[1];
+                                const celdaFinal = document.querySelector(`td[data-x="${i}"][data-y="${j}"]`);
+                                if (celdaFinal) {
+                                    celdaFinal.setAttribute("style", "background-color: black; color: white;");
+                                    celdaFinal.textContent = "X";
+                                }
                             }
                         })
                         .catch(err => {
@@ -102,6 +112,7 @@ function crearTabla(matriz) {
 
     function calcularPuntuacio(joc) {
 
+
         let puntuacio = puntuacion_Base;
 
         puntuacio -= joc.disparos * disparar;
@@ -115,9 +126,11 @@ function crearTabla(matriz) {
         // Penalización por tiempo 
         puntuacio -= joc.segons * penalizacion_Segundo;
 
+
         // Si abandonó
         if (joc.abandonat) {
             puntuacio = 0; // regla estricta
         }
         return puntuacio;
     }}
+
