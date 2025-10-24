@@ -175,7 +175,7 @@ def calcular_puntuacio(dispars, encerts, vaixells_enfonsats, temps_inici, temps_
 
     return max(puntuacio, 0)
 
-def guardar_temporal_partida(partida_id):
+async def guardar_temporal_partida(partida_id):
     datos = partida.get(partida_id)
     if datos is None:
         return
@@ -225,7 +225,7 @@ def guardar_temporal_partida(partida_id):
     }
 
     ruta = f"../data/games/{partida_id}.json"
-    with open(ruta, "w") as archivo:
+    async with open(ruta, "w") as archivo:
          json.dump(resumen, archivo, indent=2)
 
 def volcar_a_stats(partida_id):
