@@ -10,63 +10,75 @@ const bonus_Hundir_Barco = 50;
 const penalizacion_Segundo = 1;
 
 guardar.addEventListener("click", (event) => {
-    event.preventDefault()
-    const nombre = document.getElementById("nombre").value
-    const ampliada = document.getElementById("ampliada").value
-    const altura = document.getElementById("altura").value
-    if (nombre == "" || ampliada == "" || altura == "") {
+    event.preventDefault();
+    const nombre = document.getElementById("nombre").value;
+    const ampliada = document.getElementById("ampliada").value;
+    const altura = document.getElementById("altura").value;
 
-    }
-    else {
-        fetch(`http://127.0.0.1:8000/partida/${ampliada}/${altura}/${nombre}`)
-            .then(response => response.json())
-            .then(data => {
-                const partidaID = data.id
+    if (nombre === "" || ampliada === "" || altura === "") return;
 
-                fetch(`http://127.0.0.1:8000/barcos/${partidaID}`)
+    fetch(`http://127.0.0.1:8000/iniciar/${ampliada}/${altura}/${nombre}`)
+        .then(response => response.json())
+        .then(data => {
+            const partidaID = data.id;
+            const matriz = data.matriz;
+
+            crearTabla(matriz);
+
+            tablero.addEventListener("click", event => {
+                const celda = event.target;
+                if (celda.tagName !== "TD") return;
+
+                // ✅ Bloquear disparos repetidos
+                if (
+                    celda.classList.contains("agua") ||
+                    celda.classList.contains("impacto") ||
+                    celda.classList.contains("hundido")
+                ) {
+                    return;
+                }
+
+                const x = celda.getAttribute("data-x");
+                const y = celda.getAttribute("data-y");
+
+                fetch(`http://127.0.0.1:8000/tocados/${partidaID}/${x}/${y}`)
                     .then(res => res.json())
                     .then(data => {
-                        crearTabla(data.matriz)
-                    })
-                tablero.addEventListener("click", event => {
-                    const celda = event.target;
-                    if (celda.tagName !== "TD") return
+                        celda.classList.remove("oculto");
+                        celda.setAttribute("data-activa", "false");
 
-                    const x = celda.getAttribute("data-x")
-                    const y = celda.getAttribute("data-y")
+                        if (data.resultado === "Agua") {
+                            celda.setAttribute("class", "agua");
+                            celda.textContent = "O";
+                        } else if (data.resultado === "impacto") {
+                            celda.setAttribute("class", "impacto");
+                            celda.textContent = "X";
 
-                    fetch(`http://127.0.0.1:8000/tocados/${partidaID}/${x}/${y}`)
-                        .then(res => res.json())
-                        .then(data => {
-                            celda.classList.remove("oculto")
-                            celda.setAttribute("data-activa", "false")
+                            // ✅ Marcar todas las posiciones del barco destruido
+                            if (data.destruido && data.posiciones_destruidas) {
+                                data.posiciones_destruidas.forEach(([bx, by]) => {
+                                    const celdaHundida = document.querySelector(`td[data-x="${bx}"][data-y="${by}"]`);
+                                    if (celdaHundida) {
+                                        celdaHundida.setAttribute("class", "hundido");
+                                        celdaHundida.setAttribute("data-activa", "false");
 
-                            if (data.resultado === "Agua") {
-                                celda.setAttribute("class", "agua")
-                                const textoO = document.createTextNode("O")
-                                celda.appendChild(textoO)
-                            } else if (data.resultado === "Impacto") {
-                                celda.setAttribute("class", "impacto")
-                                const textoX = document.createTextNode("X")
-                                celda.appendChild(textoX)
-                            } else if (data.resultado === "Hundido") {
-                                const i = data.ultima_posicion[0];
-                                const j = data.ultima_posicion[1];
-                                const celdaFinal = document.querySelector(`td[data-x="${i}"][data-y="${j}"]`);
-                                if (celdaFinal) {
-                                    celdaFinal.setAttribute("style", "background-color: black; color: white;");
-                                    celdaFinal.textContent = "X";
-                                }
+                                        // Limpiar contenido previo
+                                        celdaHundida.innerHTML = "";
+
+                                        // Añadir ☠️ como nodo de texto
+                                        const muerte = document.createTextNode("☠️");
+                                        celdaHundida.appendChild(muerte);
+                                    }
+                                });
                             }
-                        })
-                        .catch(err => {
-                            console.error("Error al disparar:", err)
-                        });
-                })
-            })
-    }
-
-})
+                        }
+                    })
+                    .catch(err => {
+                        console.error("Error al disparar:", err);
+                    });
+            });
+        });
+});
 
 estadisticas.addEventListener("click", (event) => {
     event.preventDefault();
@@ -89,48 +101,49 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 function crearTabla(matriz) {
-    const tablero = document.querySelector("#tablero tbody")
-    tablero.innerHTML = ""
+    const tablero = document.querySelector("#tablero tbody");
+    tablero.innerHTML = "";
 
     for (let i = 0; i < matriz.length; i++) {
-        const fila = document.createElement("tr")
+        const fila = document.createElement("tr");
 
         for (let j = 0; j < matriz[i].length; j++) {
-            const celda = document.createElement("td")
-            celda.textContent = matriz[i][j]
+            const celda = document.createElement("td");
 
-            celda.setAttribute("data-x", i)
-            celda.setAttribute("data-y", j)
-            celda.setAttribute("data-valor", matriz[i][j])
-            celda.setAttribute("class", "oculto")
-            celda.textContent = ""
-            fila.appendChild(celda)
+            celda.setAttribute("data-x", i);
+            celda.setAttribute("data-y", j);
+            celda.setAttribute("data-valor", matriz[i][j]);
+            celda.setAttribute("class", "oculto");
+            celda.textContent = "";
+
+            fila.appendChild(celda);
         }
 
-        tablero.appendChild(fila)
+        tablero.appendChild(fila);
     }
+}
 
-    function calcularPuntuacio(joc) {
-
-
-        let puntuacio = puntuacion_Base;
-
-        puntuacio -= joc.disparos * disparar;
-
-        // Bonus por tocar casella
-        puntuacio += joc.casillasTocadas * bonus_tocar;
-
-        // Bonus por hundir Barco
-        puntuacio += joc.vaixellsEnfonsats * bonus_Hundir_Barco;
-
-        // Penalización por tiempo 
-        puntuacio -= joc.segons * penalizacion_Segundo;
+function calcularPuntuacio(joc) {
 
 
-        // Si abandonó
-        if (joc.abandonat) {
-            puntuacio = 0; // regla estricta
-        }
-        return puntuacio;
-    }}
+    let puntuacio = puntuacion_Base;
+
+    puntuacio -= joc.disparos * disparar;
+
+    // Bonus por tocar casella
+    puntuacio += joc.casillasTocadas * bonus_tocar;
+
+    // Bonus por hundir Barco
+    puntuacio += joc.vaixellsEnfonsats * bonus_Hundir_Barco;
+
+    // Penalización por tiempo 
+    puntuacio -= joc.segons * penalizacion_Segundo;
+
+
+    // Si abandonó
+    if (joc.abandonat) {
+        puntuacio = 0; // regla estricta
+    }
+    return puntuacio;
+}
 

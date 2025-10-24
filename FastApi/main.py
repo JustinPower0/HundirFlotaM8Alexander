@@ -129,63 +129,88 @@ app.add_middleware(
 )
 
 # Funciones FastApi
-@app.get("/partida/{filas}/{columnas}/{nombre_usuario}", tags=["Partida"])
-def devolver_matriz(filas: int,columnas: int,nombre_usuario:str):
-    global partida
-    partida_id, matriz,nombre_usuario = agregarMatrizPartida(partida, filas,columnas,nombre_usuario)
-    return {"id": partida_id,"nom": nombre_usuario, "matriz": matriz}
+@app.get("/iniciar/{filas}/{columnas}/{nombre_usuario}", tags=["Partida"])
+def iniciar_partida(filas: int, columnas: int, nombre_usuario: str):
+    partida_id, matriz, nombre_usuario = agregarMatrizPartida(partida, filas, columnas, nombre_usuario)
+    
+    # Inicializar estructura completa
+    partida[partida_id] = {
+        "matriz": matriz,
+        "barcos": {},
+        "impactos": set()
+    }
 
-@app.get("/barcos/{partida_id}", tags=["Barcos"])
-def colocar_barcos(partida_id: str):
+    # Colocar barcos directamente
     resultado = agregarbarcos(partida, partida_id)
-    return resultado
 
+    return {
+        "id": partida_id,
+        "nombre": nombre_usuario,
+        "matriz": resultado["matriz"],
+        "barcos": resultado["barcos"]
+    }
 @app.get("/estadisticas", tags=["Estadisticas"])                     #funcion get para tener las estadisticas
 def leerEstadisticas():
     with open("../data/stats.json", "r") as archivo:
         datos = json.load(archivo)
         return datos
 
-@app.get("/tocados/{partida_id}/{x}/{y}", tags=["Disparo"])
+@app.get("/tocados/{partida_id}/{x}/{y}")
 def tocado(partida_id: str, x: int, y: int):
     datos = partida.get(partida_id)
-    if not datos:
-        return {"error": "No hay partida"}
+    if datos is None:
+        return {"error": "Partida no encontrada"}
 
     matriz = datos["matriz"]
     barcos = datos["barcos"]
+    impactos = datos.setdefault("impactos", set())
+
     if x < 0 or x >= len(matriz) or y < 0 or y >= len(matriz[0]):
         return {"error": "Coordenadas fuera de matriz"}
 
-
-    if matriz[x][y] == "X":
-        return {"resultado": "Ya fue tocado"}
-
     valor = matriz[x][y]
-    matriz[x][y] = "X"
-
     if valor == 0:
         return {"resultado": "Agua"}
 
-    for tipo, lista in barcos.items():
-        for barco in lista:
-            if [x, y] in barco["posiciones"]:
-                barco["posiciones"].remove([x, y])
-                if len(barco["posiciones"]) == 0:
-                    return {
-                        "resultado": "Hundido",
-                        "tipo_barco": tipo,
-                        "id_barco": barco["id"],
-                        "ultima_posicion": [x, y]
-                    }
-                else:
-                    return {
-                        "resultado": "Impacto",
-                        "tipo_barco": tipo,
-                        "id_barco": barco["id"]
-                    }
-                
-    return {"resultado": "Impacto"}
+    impactos.add((x, y))
+
+    tipo_barco = None
+    id_barco = None
+    destruido = False
+    posiciones_destruidas = []
+
+    for tipo, lista_barcos in barcos.items():
+        for barco in lista_barcos:
+            for pos in barco["posiciones"]:
+                if pos[0] == x and pos[1] == y:
+                    tipo_barco = tipo
+                    id_barco = barco["id"]
+
+                    # Guardar copia de las posiciones antes de eliminar
+                    posiciones_destruidas = barco["posiciones"].copy()
+
+                    # Eliminar la posición impactada
+                    barco["posiciones"] = [
+                        p for p in barco["posiciones"] if not (p[0] == x and p[1] == y)
+                    ]
+
+                    if len(barco["posiciones"]) == 0:
+                        destruido = True
+                    break
+            if tipo_barco is not None:
+                break
+
+    respuesta = {
+        "resultado": "impacto",
+        "tipo_barco": tipo_barco,
+        "id_barco": id_barco,
+        "destruido": destruido
+    }
+
+    if destruido:
+        respuesta["posiciones_destruidas"] = posiciones_destruidas
+
+    return respuesta
     
 @app.get("/estado_juego",tags=["Estado_Juego"])
 def estado_juego():
