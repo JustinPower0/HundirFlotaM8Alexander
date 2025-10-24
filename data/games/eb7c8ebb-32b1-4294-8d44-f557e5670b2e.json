@@ -1,0 +1,317 @@
+{
+  "game_id": "eb7c8ebb-32b1-4294-8d44-f557e5670b2e",
+  "files": 10,
+  "columnes": 10,
+  "tauler": [
+    [
+      4,
+      0,
+      0,
+      0,
+      0,
+      3,
+      0,
+      0,
+      0,
+      0
+    ],
+    [
+      4,
+      0,
+      0,
+      0,
+      0,
+      3,
+      0,
+      0,
+      0,
+      0
+    ],
+    [
+      4,
+      0,
+      0,
+      0,
+      0,
+      3,
+      0,
+      0,
+      0,
+      0
+    ],
+    [
+      4,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      2,
+      2,
+      0
+    ],
+    [
+      3,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    [
+      3,
+      4,
+      0,
+      0,
+      2,
+      2,
+      0,
+      0,
+      0,
+      0
+    ],
+    [
+      3,
+      4,
+      0,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0
+    ],
+    [
+      0,
+      4,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      4,
+      0,
+      0,
+      5,
+      5,
+      5,
+      5,
+      5,
+      0
+    ],
+    [
+      0,
+      3,
+      3,
+      3,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ]
+  ],
+  "vaixells": [
+    {
+      "tipus": "submari",
+      "mida": 1,
+      "posicions": [
+        [
+          6,
+          7
+        ]
+      ],
+      "tocades": 0,
+      "enfonsat": false
+    },
+    {
+      "tipus": "destructor",
+      "mida": 2,
+      "posicions": [
+        [
+          5,
+          4
+        ],
+        [
+          5,
+          5
+        ]
+      ],
+      "tocades": 0,
+      "enfonsat": false
+    },
+    {
+      "tipus": "destructor",
+      "mida": 2,
+      "posicions": [
+        [
+          3,
+          7
+        ],
+        [
+          3,
+          8
+        ]
+      ],
+      "tocades": 0,
+      "enfonsat": false
+    },
+    {
+      "tipus": "creuer",
+      "mida": 3,
+      "posicions": [
+        [
+          4,
+          0
+        ],
+        [
+          5,
+          0
+        ],
+        [
+          6,
+          0
+        ]
+      ],
+      "tocades": 0,
+      "enfonsat": false
+    },
+    {
+      "tipus": "creuer",
+      "mida": 3,
+      "posicions": [
+        [
+          0,
+          5
+        ],
+        [
+          1,
+          5
+        ],
+        [
+          2,
+          5
+        ]
+      ],
+      "tocades": 0,
+      "enfonsat": false
+    },
+    {
+      "tipus": "creuer",
+      "mida": 3,
+      "posicions": [
+        [
+          9,
+          1
+        ],
+        [
+          9,
+          2
+        ],
+        [
+          9,
+          3
+        ]
+      ],
+      "tocades": 0,
+      "enfonsat": false
+    },
+    {
+      "tipus": "cuirassat",
+      "mida": 4,
+      "posicions": [
+        [
+          0,
+          0
+        ],
+        [
+          1,
+          0
+        ],
+        [
+          2,
+          0
+        ],
+        [
+          3,
+          0
+        ]
+      ],
+      "tocades": 0,
+      "enfonsat": false
+    },
+    {
+      "tipus": "cuirassat",
+      "mida": 4,
+      "posicions": [
+        [
+          5,
+          1
+        ],
+        [
+          6,
+          1
+        ],
+        [
+          7,
+          1
+        ],
+        [
+          8,
+          1
+        ]
+      ],
+      "tocades": 0,
+      "enfonsat": false
+    },
+    {
+      "tipus": "portaavions",
+      "mida": 5,
+      "posicions": [
+        [
+          8,
+          4
+        ],
+        [
+          8,
+          5
+        ],
+        [
+          8,
+          6
+        ],
+        [
+          8,
+          7
+        ],
+        [
+          8,
+          8
+        ]
+      ],
+      "tocades": 0,
+      "enfonsat": false
+    }
+  ],
+  "dispars": [],
+  "vaixells_totals": 9,
+  "vaixells_enfonsats": 0,
+  "caselles_destapades": 0,
+  "estat": "en_curs",
+  "jugador": "hhh",
+  "data_inici": "2025-10-24T17:50:10.888056",
+  "data_fi": null
+}
