@@ -4,12 +4,8 @@ let estadisticas = document.getElementById("estadisticas");
 let estado_juego = document.getElementById("estado_juego");
 let partidaID = null;
 let intervaloPuntuacion = null;
-let dificultadSeleccionada = "medium"; // valor por defecto
-
-const marcador = document.createElement("div");
-marcador.setAttribute("id", "puntos");
-marcador.appendChild(document.createTextNode("Punts: 0"));
-document.body.appendChild(marcador);
+let dificultadSeleccionada = "medium";
+let marcador = document.querySelector(".score");
 
 guardar.addEventListener("click", (event) => {
   event.preventDefault();
@@ -36,8 +32,7 @@ guardar.addEventListener("click", (event) => {
     estado_juego.appendChild(aviso);
     return;
   }
-
-  // Limpieza si todo está bien
+  
   [nombre, ampliada, altura].forEach(campo => campo.removeAttribute("class"));
   const avisoExistente = document.getElementById("aviso_campos");
   if (avisoExistente) avisoExistente.remove();
@@ -234,8 +229,7 @@ function crearTabla(matriz) {
 }
 
 function actualizarMarcador(puntuacion) {
-  while (marcador.firstChild) marcador.removeChild(marcador.firstChild);
-  marcador.appendChild(document.createTextNode(`Punts: ${puntuacion}`));
+  marcador.textContent = `${puntuacion} punts`;
   actualizarColor(puntuacion);
 }
 
