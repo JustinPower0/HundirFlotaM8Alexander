@@ -108,50 +108,8 @@ def agregarbarcos(partida, partida_id):
     datos["barcos"] = barcos
     return {"matriz": matriz, "barcos": barcos}
 
-def actualizar_stats(jugador, puntuacio, files, columnes, duracio_ms):
-    ruta = "../data/stats.json"
-
-    # Estructura base si el archivo no existe
-    stats = {
-        "total_partides": 0,
-        "millor_puntuacio": 0,
-        "millor_jugador": "",
-        "data_millor": "",
-        "rànquing_top5": []
-    }
-
-    # Leer archivo si existe
-    if os.path.exists(ruta):
-        with open(ruta, "r") as archivo:
-            stats = json.load(archivo)
-
-    # Actualizar total de partidas
-    stats["total_partides"] += 1
-
-    # Actualizar mejor puntuación
-    if puntuacio > stats["millor_puntuacio"]:
-        stats["millor_puntuacio"] = puntuacio
-        stats["millor_jugador"] = jugador
-        stats["data_millor"] = datetime.now().isoformat()
-
-    # Añadir al rànquing_top5 si aplica
-    nueva_entrada = {
-        "jugador": jugador,
-        "puntuacio": puntuacio,
-        "files": files,
-        "columnes": columnes,
-        "data": datetime.now().isoformat(),
-        "duracio_ms": duracio_ms
-    }
-
-    stats["rànquing_top5"].append(nueva_entrada)
-    stats["rànquing_top5"] = sorted(stats["rànquing_top5"], key=lambda x: x["puntuacio"], reverse=True)[:5]
-
-    # Guardar archivo
-    with open(ruta, "w") as archivo:
-        json.dump(stats, archivo, indent=2)
-
-def calcular_puntuacio(dispars, encerts, vaixells_enfonsats, temps_inici, temps_final, estat, dificultat="medium"):
+#Calcula la puntuacion
+def calcular_puntuacio(dispars, encerts, vaixells_enfonsats, temps_inici, temps_final, estat, dificultat="easy"):
     BASE = 1000
 
     if estat == "abandonada":
@@ -161,27 +119,40 @@ def calcular_puntuacio(dispars, encerts, vaixells_enfonsats, temps_inici, temps_
     if dificultat == "easy":
         COST_DISPAR = -5
         PENAL_TEMPS = -0.5
+        MULTIPLICADOR = 1.0
     elif dificultat == "hard":
         COST_DISPAR = -20
         PENAL_TEMPS = -2
+        MULTIPLICADOR = 1.5
     else:  # medium
         COST_DISPAR = -10
         PENAL_TEMPS = -1
+        MULTIPLICADOR = 2.0
 
     BONUS_ENCERT = 20
     BONUS_ENFONSAT = 50
 
     duracio = (temps_final - temps_inici).total_seconds()
-    puntuacio = (
+    puntuacio_base  = (
         BASE +
         dispars * COST_DISPAR +
         encerts * BONUS_ENCERT +
         vaixells_enfonsats * BONUS_ENFONSAT +
         int(duracio) * PENAL_TEMPS
     )
+    puntuacio_final = int(puntuacio_base * MULTIPLICADOR)
+    return max(puntuacio_final, 0)
 
-    return max(puntuacio, 0)
+#Para saber que umbral de dificultat estoy
+def umbral_derrota(dificultat="easy"):
+    if dificultat == "hard":
+        return 0.35
+    elif dificultat == "medium":
+        return 0.45
+    else:  # easy
+        return 0.5
 
+#Volcar los datos en disco
 def volcar_partida_finalizada(partida_id: str):
     datos = partida.get(partida_id)
     if not datos or datos.get("estado") == "en_curs":
@@ -354,7 +325,7 @@ def leerEstadisticas():
             "error": f"No s'ha pogut llegir el fitxer: {e}"
         }
 
-@app.get("/tocados/{partida_id}/{x}/{y}")
+@app.get("/tocados/{partida_id}/{x}/{y}", tags=["Disparo"])
 def tocado(partida_id: str, x: int, y: int):
     datos = partida.get(partida_id)
     if datos is None:
@@ -428,12 +399,11 @@ def tocado(partida_id: str, x: int, y: int):
 
     if barcos_destruidos == total_barcos:
         estado = "victoria"
-    elif casillas_destapadas > 0.5 * len(matriz) * len(matriz[0]):
+    elif casillas_destapadas > umbral_derrota(datos.get("dificultat", "easy")) * len(matriz) * len(matriz[0]):
         estado = "derrota"
 
-    if estado in ["victoria", "derrota"]:
-        volcar_partida_finalizada(partida_id)
-    
+    datos["estado"] = estado
+
     # Calcular puntuación
     encerts = sum(1 for x, y in impactos if matriz[x][y] != 0)
     dispars = casillas_destapadas
@@ -449,6 +419,13 @@ def tocado(partida_id: str, x: int, y: int):
         temps_final=datetime.now(),
         estat=estado
     )
+
+    datos["puntuacion"] = puntuacion
+    datos["duracion_ms"] = duracion_ms
+
+    # Volcar si es final
+    if estado in ["victoria", "derrota"]:
+        volcar_partida_finalizada(partida_id)
 
     # Guardar estado y puntuación
     datos["estado"] = estado
