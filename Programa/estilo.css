@@ -49,6 +49,13 @@ input.error {
   background-color: #ffe6e6;
 }
 
+#error_mensaje,
+.error_mensaje {
+  color: red;
+  font-weight: bold;
+  font-family: Arial, sans-serif;
+}
+
 .nivells {
   display: flex;
   flex-direction: column;

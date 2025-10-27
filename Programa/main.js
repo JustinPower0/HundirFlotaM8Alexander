@@ -13,14 +13,36 @@ document.body.appendChild(marcador);
 
 guardar.addEventListener("click", (event) => {
   event.preventDefault();
-  const nombre = document.getElementById("nombre").value;
-  const ampliada = document.getElementById("ampliada").value;
-  const altura = document.getElementById("altura").value;
-  dificultadSeleccionada = document.querySelector('input[name="dificultat"]:checked').value;
 
-  if (nombre === "" || ampliada === "" || altura === "") return;
+  const nombre = document.getElementById("nombre");
+  const ampliada = document.getElementById("ampliada");
+  const altura = document.getElementById("altura");
 
-  fetch(`http://127.0.0.1:8000/iniciar/${ampliada}/${altura}/${nombre}/${dificultadSeleccionada}`)
+  let camposInvalidos = [];
+
+  if (nombre.value === "") camposInvalidos.push(nombre);
+  if (ampliada.value === "") camposInvalidos.push(ampliada);
+  if (altura.value === "") camposInvalidos.push(altura);
+
+  if (camposInvalidos.length > 0) {
+    camposInvalidos.forEach(campo => campo.setAttribute("class", "error"));
+
+    const aviso = document.createElement("p");
+    aviso.setAttribute("id", "aviso_campos");
+    aviso.setAttribute("class", "error_mensaje");
+    aviso.appendChild(document.createTextNode("Completa todos los campos antes de continuar."));
+
+    while (estado_juego.firstChild) estado_juego.removeChild(estado_juego.firstChild);
+    estado_juego.appendChild(aviso);
+    return;
+  }
+
+  // Limpieza si todo está bien
+  [nombre, ampliada, altura].forEach(campo => campo.removeAttribute("class"));
+  const avisoExistente = document.getElementById("aviso_campos");
+  if (avisoExistente) avisoExistente.remove();
+
+  fetch(`http://127.0.0.1:8000/iniciar/${ampliada.value}/${altura.value}/${nombre.value}/${dificultadSeleccionada}`)
     .then(response => response.json())
     .then(data => {
       partidaID = data.id;

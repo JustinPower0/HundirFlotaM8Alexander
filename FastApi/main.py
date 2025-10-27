@@ -237,6 +237,7 @@ origins = [
     "http://127.0.0.1:5500",
 ]
 
+#Cors
 app.add_middleware(
     CORSMiddleware,
      #allow_origins=["*"],  # permite cualquier origen (no recomendable en producción)
@@ -247,6 +248,7 @@ app.add_middleware(
 )
 
 # Funciones FastApi
+#Funcion para iniciar la partida
 @app.get("/iniciar/{filas}/{columnas}/{nombre_usuario}/{dificultat}", tags=["Partida"])
 def iniciar_partida(filas: int, columnas: int, nombre_usuario: str, dificultat: str = "medium"):
     partida_id, matriz, nombre_usuario = agregarMatrizPartida(partida, filas, columnas, nombre_usuario)
@@ -286,7 +288,7 @@ def iniciar_partida(filas: int, columnas: int, nombre_usuario: str, dificultat: 
         "barcos": resultado["barcos"],
         "puntuacion": puntuacion_inicial
     }
-
+#Funcion para ver las estadisticas
 @app.get("/estadisticas", tags=["Estadisticas"])
 def leerEstadisticas():
     ruta_stats = "../data/stats.json"
@@ -324,7 +326,7 @@ def leerEstadisticas():
         return {
             "error": f"No s'ha pogut llegir el fitxer: {e}"
         }
-
+#Funcion para hacer los disparos a los barcos
 @app.get("/tocados/{partida_id}/{x}/{y}", tags=["Disparo"])
 def tocado(partida_id: str, x: int, y: int):
     datos = partida.get(partida_id)
@@ -457,7 +459,8 @@ def tocado(partida_id: str, x: int, y: int):
         respuesta["posiciones_destruidas"] = posiciones_destruidas
 
     return respuesta
-    
+
+#Funcion para ver el estado del juego en la memoria
 @app.get("/estado_juego/{partida_id}", tags=["Estado_Juego"])
 def estado_juego(partida_id: str):
     datos = partida.get(partida_id)
@@ -491,7 +494,7 @@ def estado_juego(partida_id: str):
         "vaixells_totals": vaixells_totals,
         "caselles_destapades": caselles_destapades
     }
-
+#Funcion para ir actualizando la puntuacion a tiempo real
 @app.get("/puntuacio_actual/{partida_id}", tags=["Partida"])
 def puntuacio_actual(partida_id: str):
     datos = partida.get(partida_id)
@@ -520,7 +523,7 @@ def puntuacio_actual(partida_id: str):
     datos["puntuacion"] = puntuacio
 
     return {"puntuacion": puntuacio}
-
+#Funcion para abandonar el juego
 @app.get("/abandonar/{partida_id}", tags=["Partida"])
 def abandonar_partida(partida_id: str):
     datos = partida.get(partida_id)
