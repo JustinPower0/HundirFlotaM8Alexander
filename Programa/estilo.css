@@ -59,6 +59,12 @@ body {
   background-color: #f7f7f7;
 }
 
+  body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      padding: 20px;
+    }
+
 #formulario {
   background: white;
   padding: 25px;
@@ -137,3 +143,50 @@ input[type="range"] {
 .btn:hover {
   opacity: 0.9;
 }
+
+.container {
+      background-color: #fff;
+      border-radius: 8px;
+      padding: 20px;
+      max-width: 400px;
+      margin: auto;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    h1, h2 {
+     
+      color: #333;
+    }
+    ul {
+      list-style: none;
+      padding: 0;
+    }
+    li {
+      padding: 8px 0;
+      border-bottom: 1px solid #ddd;
+    }
+    .score {
+      font-size: 24px;
+      font-weight: bold;
+      color: #661bce;
+      margin-bottom: 30px;
+    }
+    #jugador{
+ color: #661bce;
+ 
+
+    }
+    .stats {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .stat {
+      background-color: #f3f2ff; /* color de fondo suave */
+      color: #222;
+      padding: 6px 14px;
+      border-radius: 16px; /* bordes redondeados */
+      font-weight: 600;
+      font-size: 14px;
+      box-shadow: 0 0 2px rgba(0,0,0,0.05);
+    }
