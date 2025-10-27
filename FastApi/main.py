@@ -1,7 +1,5 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
-from typing import Optional
 import random
 import uuid
 import json
@@ -18,7 +16,6 @@ barcos_definicion = {
     "cuirassat": {"id": 4, "longitud": 4},
     "portaavions": {"id": 5, "longitud": 5}
 }
-
 
 # Funciones Normales
 
@@ -154,15 +151,25 @@ def actualizar_stats(jugador, puntuacio, files, columnes, duracio_ms):
     with open(ruta, "w") as archivo:
         json.dump(stats, archivo, indent=2)
 
-def calcular_puntuacio(dispars, encerts, vaixells_enfonsats, temps_inici, temps_final, estat):
+def calcular_puntuacio(dispars, encerts, vaixells_enfonsats, temps_inici, temps_final, estat, dificultat="medium"):
     BASE = 1000
-    COST_DISPAR = -10
-    BONUS_ENCERT = 20
-    BONUS_ENFONSAT = 50
-    PENAL_TEMPS = -1
 
     if estat == "abandonada":
         return 0
+
+    # Ajustes según dificultad
+    if dificultat == "easy":
+        COST_DISPAR = -5
+        PENAL_TEMPS = -0.5
+    elif dificultat == "hard":
+        COST_DISPAR = -20
+        PENAL_TEMPS = -2
+    else:  # medium
+        COST_DISPAR = -10
+        PENAL_TEMPS = -1
+
+    BONUS_ENCERT = 20
+    BONUS_ENFONSAT = 50
 
     duracio = (temps_final - temps_inici).total_seconds()
     puntuacio = (
@@ -228,57 +235,51 @@ async def guardar_temporal_partida(partida_id):
     async with open(ruta, "w") as archivo:
          json.dump(resumen, archivo, indent=2)
 
-def volcar_a_stats(partida_id):
-    ruta_partida = f"../data/games/{partida_id}.json"
-    ruta_stats = "../data/stats.json"
-
-    if not os.path.exists(ruta_partida):
+def volcar_a_stats(partida_id: str):
+    datos = partida.get(partida_id)
+    if not datos or datos.get("estado") == "en_curs":
         return
 
-    with open(ruta_partida, "r") as archivo:
-        partida = json.load(archivo)
+    ruta_stats = "data/stats.json"
+    try:
+        with open(ruta_stats, "r", encoding="utf-8") as f:
+            stats = json.load(f)
+    except FileNotFoundError:
+        stats = {
+            "total_partides": 0,
+            "millor_puntuacio": 0,
+            "millor_jugador": "",
+            "data_millor": "",
+            "rànquing_top5": []
+        }
 
-    puntuacio = partida.get("puntuacion", 0)
-    jugador = partida.get("jugador", "anònim")
-    files = partida.get("files", 0)
-    columnes = partida.get("columnes", 0)
-    data = partida.get("data_fi", datetime.now().isoformat())
-    duracio_ms = partida.get("duracion_ms", 0)
-
-    # Estructura base si no existe
-    stats = {
-        "total_partides": 0,
-        "millor_puntuacio": 0,
-        "millor_jugador": "",
-        "data_millor": "",
-        "rànquing_top5": []
-    }
-
-    if os.path.exists(ruta_stats):
-        with open(ruta_stats, "r") as archivo:
-            stats = json.load(archivo)
-
+    # Actualizar estadísticas
     stats["total_partides"] += 1
+    puntuacio = datos.get("puntuacion", 0)
+    jugador = datos.get("jugador", "Anònim")
+    files = len(datos["matriz"])
+    columnes = len(datos["matriz"][0])
+    data_fi = datos.get("data_fi", "")
 
     if puntuacio > stats["millor_puntuacio"]:
         stats["millor_puntuacio"] = puntuacio
         stats["millor_jugador"] = jugador
-        stats["data_millor"] = data
+        stats["data_millor"] = data_fi
 
-    entrada = {
+    # Añadir al ranking si aplica
+    stats["rànquing_top5"].append({
         "jugador": jugador,
         "puntuacio": puntuacio,
         "files": files,
         "columnes": columnes,
-        "data": data,
-        "duracio_ms": duracio_ms
-    }
+        "dificultat": datos.get("dificultat", "medium")
+    })
 
-    stats["rànquing_top5"].append(entrada)
+    # Ordenar y limitar top 5
     stats["rànquing_top5"] = sorted(stats["rànquing_top5"], key=lambda x: x["puntuacio"], reverse=True)[:5]
 
-    with open(ruta_stats, "w") as archivo:
-        json.dump(stats, archivo, indent=2)
+    with open(ruta_stats, "w", encoding="utf-8") as f:
+        json.dump(stats, f, indent=2, ensure_ascii=False)
 
 # Crear la aplicación
 app = FastAPI(title="Mi Projecto", version="0.0.1")
@@ -299,16 +300,18 @@ app.add_middleware(
 )
 
 # Funciones FastApi
-@app.get("/iniciar/{filas}/{columnas}/{nombre_usuario}", tags=["Partida"])
-def iniciar_partida(filas: int, columnas: int, nombre_usuario: str):
+@app.get("/iniciar/{filas}/{columnas}/{nombre_usuario}/{dificultat}", tags=["Partida"])
+def iniciar_partida(filas: int, columnas: int, nombre_usuario: str, dificultat: str = "medium"):
     partida_id, matriz, nombre_usuario = agregarMatrizPartida(partida, filas, columnas, nombre_usuario)
 
+    inicio = datetime.now()
     partida[partida_id] = {
         "matriz": matriz,
         "barcos": {},
         "impactos": set(),
-        "inicio": datetime.now(),
+        "inicio": inicio,
         "estado": "en_curs",
+        "dificultat": dificultat,
         "traza": [],
         "puntuacion": 0,
         "duracion_ms": 0,
@@ -316,12 +319,26 @@ def iniciar_partida(filas: int, columnas: int, nombre_usuario: str):
     }
 
     resultado = agregarbarcos(partida, partida_id)
+
+    # Calcular puntuación inicial
+    puntuacion_inicial = calcular_puntuacio(
+        dispars=0,
+        encerts=0,
+        vaixells_enfonsats=0,
+        temps_inici=inicio,
+        temps_final=inicio,
+        estat="en_curs"
+    )
+
+    partida[partida_id]["puntuacion"] = puntuacion_inicial
     guardar_temporal_partida(partida_id)
+
     return {
         "id": partida_id,
         "nombre": nombre_usuario,
         "matriz": resultado["matriz"],
-        "barcos": resultado["barcos"]
+        "barcos": resultado["barcos"],
+        "puntuacion": puntuacion_inicial
     }
 
 @app.get("/estadisticas", tags=["Estadisticas"])
@@ -374,10 +391,22 @@ def tocado(partida_id: str, x: int, y: int):
             "timestamp": datetime.now().isoformat()
         })
 
+        encerts = sum(1 for x, y in impactos if matriz[x][y] != 0)
+        dispars = len(impactos)
+        inicio = datos.get("inicio", datetime.now())
+        puntuacion = calcular_puntuacio(
+        dispars=dispars,
+        encerts=encerts,
+        vaixells_enfonsats=sum(1 for b in barcos.values() for v in b if len(v["posiciones"]) == 0),
+        temps_inici=inicio,
+        temps_final=datetime.now(),
+        estat=datos.get("estado", "en_curs")
+        )
+        datos["puntuacion"] = puntuacion
         return {
-            "resultado": "Agua",
-            "estado": datos.get("estado", "en_curs"),
-            "puntuacion": datos.get("puntuacion", 0)
+        "resultado": "Agua",
+        "estado": datos.get("estado", "en_curs"),
+        "puntuacion": puntuacion
         }
 
     impactos.add((x, y))
@@ -478,3 +507,75 @@ def estado_juego(partida_id: str):
             return dato
     except Exception as e:
         return {"error": f"No s'ha pogut llegir la partida: {e}"}
+
+@app.get("/puntuacio_actual/{partida_id}", tags=["Partida"])
+def puntuacio_actual(partida_id: str):
+    datos = partida.get(partida_id)
+    if not datos:
+        return {"error": "Partida no trobada"}
+
+    matriz = datos["matriz"]
+    impactos = datos.get("impactos", set())
+    barcos = datos.get("barcos", {})
+    inicio = datos.get("inicio", datetime.now())
+    estat = datos.get("estado", "en_curs")
+
+    encerts = sum(1 for x, y in impactos if matriz[x][y] != 0)
+    dispars = len(impactos)
+    vaixells_enfonsats = sum(1 for b in barcos.values() for v in b if len(v["posiciones"]) == 0)
+
+    puntuacio = calcular_puntuacio(
+        dispars=dispars,
+        encerts=encerts,
+        vaixells_enfonsats=vaixells_enfonsats,
+        temps_inici=inicio,
+        temps_final=datetime.now(),
+        estat=estat
+    )
+
+    datos["puntuacion"] = puntuacio
+
+    return {"puntuacion": puntuacio}
+
+@app.get("/abandonar/{partida_id}", tags=["Partida"])
+def abandonar_partida(partida_id: str):
+    datos = partida.get(partida_id)
+    if not datos:
+        return {"error": "Partida no trobada"}
+
+    datos["estado"] = "abandonada"
+    datos["data_fi"] = datetime.now().isoformat()
+    datos["puntuacion"] = 0
+
+    guardar_temporal_partida(partida_id)
+    volcar_a_stats(partida_id)
+
+    return {
+        "jugador": datos["jugador"],
+        "estat": datos["estado"],
+        "puntuacio": datos.get("puntuacion", 0),
+        "vaixells_enfonsats": datos.get("vaixells_enfonsats", 0),
+        "caselles_destapades": len(datos.get("impactos", []))
+    }
+
+@app.get("/finalitzar/{partida_id}", tags=["Partida"])
+def finalitzar_partida(partida_id: str):
+    datos = partida.get(partida_id)
+    if not datos:
+        return {"error": "Partida no trobada"}
+
+    datos["estado"] = "finalitzada"
+    datos["data_fi"] = datetime.now().isoformat()
+
+    puntuacio = calcular_puntuacio(datos)
+    datos["puntuacion"] = puntuacio
+
+    guardar_temporal_partida(partida_id)
+
+    return {
+        "jugador": datos["jugador"],
+        "estat": datos["estado"],
+        "puntuacio": puntuacio,
+        "vaixells_enfonsats": datos.get("vaixells_enfonsats", 0),
+        "caselles_destapades": len(datos.get("impactos", []))
+    }
