@@ -337,6 +337,8 @@ def tocado(partida_id: str, x: int, y: int):
     barcos = datos["barcos"]
     impactos = datos.setdefault("impactos", set())
     trazas = datos.setdefault("traza", [])
+    datos.setdefault("impactos_barco", 0)
+    datos.setdefault("impactos_agua", 0)
 
     if x < 0 or x >= len(matriz) or y < 0 or y >= len(matriz[0]):
         return {"error": "Coordenadas fuera de matriz"}
@@ -344,6 +346,7 @@ def tocado(partida_id: str, x: int, y: int):
     valor = matriz[x][y]
     if valor == 0:
         impactos.add((x, y))  # registrar disparo fallido
+        datos["impactos_agua"] += 1
 
         # Registrar traza de disparo fallido
         trazas.append({
@@ -371,6 +374,7 @@ def tocado(partida_id: str, x: int, y: int):
         }
 
     impactos.add((x, y))
+    datos["impactos_barco"] += 1
 
     tipo_barco = None
     id_barco = None
@@ -482,6 +486,9 @@ def estado_juego(partida_id: str):
     vaixells_totals = sum(len(b) for b in barcos.values())
     caselles_destapades = len(impactos)
 
+    impactos_barco = datos.get("impactos_barco", 0)
+    impactos_agua = datos.get("impactos_agua", 0)
+
     return {
         "jugador": jugador,
         "estat": estat,
@@ -492,7 +499,9 @@ def estado_juego(partida_id: str):
         "duracion_ms": duracion_ms,
         "vaixells_enfonsats": vaixells_enfonsats,
         "vaixells_totals": vaixells_totals,
-        "caselles_destapades": caselles_destapades
+        "caselles_destapades": caselles_destapades,
+        "impactos_barco": impactos_barco,
+        "impactos_agua": impactos_agua,
     }
 #Funcion para ir actualizando la puntuacion a tiempo real
 @app.get("/puntuacio_actual/{partida_id}", tags=["Partida"])

@@ -32,7 +32,7 @@ guardar.addEventListener("click", (event) => {
     estado_juego.appendChild(aviso);
     return;
   }
-  
+
   [nombre, ampliada, altura].forEach(campo => campo.removeAttribute("class"));
   const avisoExistente = document.getElementById("aviso_campos");
   if (avisoExistente) avisoExistente.remove();
@@ -42,8 +42,13 @@ guardar.addEventListener("click", (event) => {
     .then(data => {
       partidaID = data.id;
       crearTabla(data.matriz);
-
       actualizarMarcador(data.puntuacion);
+
+      fetch(`http://127.0.0.1:8000/estado_juego/${partidaID}`)
+        .then(res => res.json())
+        .then(info => {
+          actualizarEstadisticasVisuales(info);
+        });
 
       if (intervaloPuntuacion) clearInterval(intervaloPuntuacion);
       intervaloPuntuacion = setInterval(() => {
@@ -93,18 +98,21 @@ tabla.addEventListener("click", event => {
         }
       }
 
-      if (data.estado === "victoria" || data.estado === "derrota") {
-        clearInterval(intervaloPuntuacion);
-        fetch(`http://127.0.0.1:8000/estado_juego/${partidaID}`)
-          .then(res => res.json())
-          .then(info => {
+      // 🔁 Actualizar estadísticas visuales en tiempo real
+      fetch(`http://127.0.0.1:8000/estado_juego/${partidaID}`)
+        .then(res => res.json())
+        .then(info => {
+          actualizarEstadisticasVisuales(info); // ← actualiza el div .container
+
+          if (data.estado === "victoria" || data.estado === "derrota") {
+            clearInterval(intervaloPuntuacion);
             mostrarEstadoFinal(info);
             document.querySelectorAll("#tablero td").forEach(celda => {
               celda.setAttribute("data-activa", "false");
             });
             alert(info.estat === "victoria" ? "🎉 Has guanyat la partida!" : "💀 Has perdut la partida...");
-          });
-      }
+          }
+        });
     })
     .catch(err => console.error("Error al disparar:", err));
 });
@@ -269,4 +277,17 @@ function mostrarEstadoFinal(info) {
     p.appendChild(document.createTextNode(`${label} ${valor}`));
     estado_juego.appendChild(p);
   });
+}
+
+function actualizarEstadisticasVisuales(data) {
+  document.getElementById("jugador").textContent = `Jugador: ${data.jugador}`;
+  const estadoTexto = document.querySelector(".container h4");
+  estadoTexto.textContent = `Estado: ${data.estat}`;
+
+  const stats = document.querySelectorAll(".stat");
+  stats[0].textContent = `Hits: ${data.impactos_barco}`;
+  stats[1].textContent = `Misses: ${data.impactos_agua}`;
+  stats[2].textContent = `Ships Sunk: ${data.vaixells_enfonsats}`;
+
+  document.getElementById("jugadas").textContent = data.caselles_destapades;
 }
