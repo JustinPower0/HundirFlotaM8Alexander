@@ -1,99 +1,91 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html lang="ca">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Projecte 1</title>
-    <link rel="stylesheet" href="estilo.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Projecte 1 - Batalla Naval</title>
+  <link rel="stylesheet" href="estilo.css">
 </head>
 
 <body>
-    <div class="layout">
-        <div id="formulario">
-            <h4>Configuració del Joc</h4>
-            <div class="campo">
-                <label for="nombre">Nombre</label>
-                <input type="text" id="nombre" placeholder="Escribe tu nombre">
-            </div>
-            <div id="elegir">
-                <div class="campo">
-                    <label for="ampliada">Amplada</label>
-                    <input type="number" id="ampliada" value="10" min="8" max="20">
-                </div>
-                <div class="campo">
-                    <label for="altura">Alçada</label>
-                    <input type="number" id="altura" value="10" min="8" max="20">
-                </div>
-            </div>
-            <div class="campo">
-                <label for="vaixells">Num vaixells (<span id="valorVaixells">6</span>)</label>
-                <input type="range" id="vaixells" min="1" max="10" value="6">
-            </div>
-            <div class="campo dificultad">
-                <label>Difficulty</label>
-                <div class="nivells">
-                    <label><input type="radio" name="dificultat" value="easy" checked> Easy</label>
-                    <label><input type="radio" name="dificultat" value="medium"> Medium</label>
-                    <label><input type="radio" name="dificultat" value="hard"> Hard</label>
-                </div>
-            </div>
-            <div id="botones">
-                <button id="guardar" class="btn azul" type="button">Start Game</button>
-                <button class="btn blanco">Restart Game</button>
-                <button class="btn rojo">Abandon Game</button>
-                <button id="ver_estado" class="btn gris">Ver Estado</button>
-                <button id="estadisticas" class="btn gris">Ver Estadísticas</button>
-            </div>
-            <img src="img/mando.jpg" alt="Imagen de mando" class="decoracion decoracion-izquierda">
-        </div>
-        <div class="tablero-contenedor">
-            <table id="tablero">
-                <tbody></tbody>
-            </table>
-            <button id="fire">Disparo</button>
-        </div>
-        <div class="container">
-            <h1>Marcador</h1>
-            <div class="score"> 0 punts</div>
-            <h1>Estadisticas</h1>
-            <h2 id="jugador">Jugador: ANGELITO</h2>
-            <h4>Estado del jugador</h4>
-            <div class="stats">
-                <div class="stat">Hits: 5</div>
-                <div class="stat">Misses: 5</div>
-                <div class="stat">Ships Sunk: 1</div>
-            </div>
-            <h4>Numero de Jugadas</h4>
-            <h3 id="jugadas">6</h3>
-            <img src="img/mario.png" alt="Imagen de mando" class="decoracion decoracion-izquierda">
-        </div>
-    </div>
-    <div id="estado_juego"></div>
+  <div class="layout">
 
+    <!-- BLOQUE 1: FORMULARIO -->
+    <div id="formulario">
+      <h4>Configuració del Joc</h4>
+
+      <div class="campo">
+        <label for="nombre">Nombre</label>
+        <input type="text" id="nombre" placeholder="Escribe tu nombre">
+      </div>
+
+      <div id="elegir">
+        <div class="campo">
+          <label for="ampliada">Amplada</label>
+          <input type="number" id="ampliada" value="10" min="8" max="20">
+        </div>
+        <div class="campo">
+          <label for="altura">Alçada</label>
+          <input type="number" id="altura" value="10" min="8" max="20">
+        </div>
+      </div>
+
+      <div class="campo">
+        <label for="vaixells">Num vaixells (<span id="valorVaixells">6</span>)</label>
+        <input type="range" id="vaixells" min="1" max="10" value="6">
+      </div>
+
+      <div class="campo dificultad">
+        <label>Dificultat</label>
+        <div class="nivells">
+          <label><input type="radio" name="dificultat" value="easy" checked> Easy</label>
+          <label><input type="radio" name="dificultat" value="medium"> Medium</label>
+          <label><input type="radio" name="dificultat" value="hard"> Hard</label>
+        </div>
+      </div>
+
+      <div id="botones">
+        <button id="guardar" class="btn azul" type="button">Start Game</button>
+        <button class="btn blanco" type="button">Restart Game</button>
+        <button class="btn rojo" type="button">Abandon Game</button>
+        <button id="ver_estado" class="btn gris" type="button">Ver Estado</button>
+        <button id="estadisticas" class="btn gris" type="button">Ver Estadísticas</button>
+      </div>
+
+      <img src="img/mando.jpg" alt="Imagen mando" class="decoracion-izquierda">
+    </div>
+
+    <!-- BLOQUE 3: MARCADOR (ahora antes de la tabla en tablet) -->
     <div class="container">
-        <h1>Marcador</h1>
-        <div class="score"> 0 punts</div>
-        <h1>Estadisticas</h1>
-        <h2 id="jugador">Jugador: </h2>
-        <h4>estado del jugador</h4>
-        <div class="stats">
-            <div class="stat">Hits: 0</div>
-            <div class="stat">Misses: 0</div>
-            <div class="stat">Ships Sunk: 0</div>
-        </div>
-        <h4>Numero de Jugades</h4>
-        <h3 id="jugadas">0</h3>
+      <h3 id="marcador">Marcador</h3>
+      <div class="score" id="puntos">0 punts</div>
+      <h3>Estadístiques</h3>
+      <h3 id="jugador">Jugador: ANGELITO</h3>
+      <h4>Estat del jugador</h4>
+      <div class="stats">
+        <div class="stat">Hits: 5</div>
+        <div class="stat">Misses: 10</div>
+        <div class="stat">Ships Sunk: 1</div>
+      </div>
+      <h4>Nombre de Jugades</h4>
+      <h3 id="jugadas">15</h3>
+
+      <img src="img/mario.png" alt="Decoració" class="decoracion-mario">
     </div>
 
-    
-    <div id=estado_juego>
+    <!-- BLOQUE 2: TABLERO -->
+    <div class="tablero-contenedor">
+      <table id="tablero">
+        <tbody>
+          <!-- Aquí se generan las celdas dinámicamente -->
+        </tbody>
+      </table>
+      <button id="fire">Disparo</button>
     </div>
-    <table id="tablero">
-        <tbody></tbody>
-    </table>
 
-    <script src="main.js"></script>
+  </div> <!-- FIN layout -->
+
+  <div id="estado_juego"></div>
+  <script src="main.js"></script>
 </body>
-
 </html>
