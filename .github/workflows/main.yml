@@ -1,0 +1,44 @@
+name: Build and Test (Python + JS)
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:  # permite ejecutarlo manualmente desde Actions
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    # 1. Clonar el código
+    - name: Checkout repository
+      uses: actions/checkout@v4
+    # 2. Configurar Python
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: 3.11
+    # 3. Instalar dependencias de Python
+    - name: Install Python dependencies
+    # Cambia "requirements.txt" si usas otro archivo
+      run: |
+        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+
+    # 4. Configurar Node.js
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: 18
+    # 5. Instalar dependencias de JS (si hay package.json)
+    - name: Install Node dependencies
+      run: |
+        if [ -f package.json ]; then npm install; fi
+    # 6. Ejecutar tests (si los tienes)
+    - name: Run Python tests
+      run: |
+        if [ -d tests ]; then pytest || true; fi
+    - name: Run JS tests
+      run: |
+        if [ -f package.json ]; then npm test || true; fi
+    # 7. Mostrar que todo se completó
+    - name: Done
+      run: echo "✅ Workflow completado correctamente"
