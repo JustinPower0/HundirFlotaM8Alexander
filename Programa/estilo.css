@@ -169,6 +169,35 @@ input[type="text"] {
   text-align: center;
 }
 
+.desactivada {
+  pointer-events: none;
+}
+
+/* Dificultad */
+.score.easy {
+  border: 3px solid #3498db;
+}
+
+.score.medium {
+  border: 3px solid #95a5a6;
+}
+
+.score.hard {
+  border: 3px solid #e67e22;
+}
+
+/* Puntuación */
+.score.alta {
+  background-color: #2ecc71;
+}
+
+.score.media {
+  background-color: #f1c40f;
+}
+
+.score.baja {
+  background-color: #e74c3c;
+}
 .score {
   font-size: 24px;
   font-weight: bold;

@@ -41,7 +41,7 @@ def agregarMatrizPartida(partida, filas, columnas,nombre_usuario):
     return partida_id, matriz,nombre_usuario
 
 # Funcion Agregar Barcos
-def agregarbarcos(partida, partida_id):
+def agregarBarcos(partida, partida_id):
     datos = partida.get(partida_id)
     if datos is None:
         return {"error": "Partida no encontrada"}
@@ -109,7 +109,7 @@ def agregarbarcos(partida, partida_id):
     return {"matriz": matriz, "barcos": barcos}
 
 #Calcula la puntuacion
-def calcular_puntuacio(dispars, encerts, vaixells_enfonsats, temps_inici, temps_final, estat, dificultat="easy"):
+def calcularPuntuacio(dispars, encerts, vaixells_enfonsats, temps_inici, temps_final, estat, dificultat="easy"):
     BASE = 1000
 
     if estat == "abandonada":
@@ -144,7 +144,7 @@ def calcular_puntuacio(dispars, encerts, vaixells_enfonsats, temps_inici, temps_
     return max(puntuacio_final, 0)
 
 #Para saber que umbral de dificultat estoy
-def umbral_derrota(dificultat="easy"):
+def umbralDerrota(dificultat="easy"):
     if dificultat == "hard":
         return 0.35
     elif dificultat == "medium":
@@ -153,7 +153,7 @@ def umbral_derrota(dificultat="easy"):
         return 0.5
 
 #Volcar los datos en disco
-def volcar_partida_finalizada(partida_id: str):
+def volcarPartidaFinalizada(partida_id: str):
     datos = partida.get(partida_id)
     if not datos or datos.get("estado") == "en_curs":
         return
@@ -250,7 +250,7 @@ app.add_middleware(
 # Funciones FastApi
 #Funcion para iniciar la partida
 @app.get("/iniciar/{filas}/{columnas}/{nombre_usuario}/{dificultat}", tags=["Partida"])
-def iniciar_partida(filas: int, columnas: int, nombre_usuario: str, dificultat: str = "medium"):
+def iniciarPartida(filas: int, columnas: int, nombre_usuario: str, dificultat: str = "easy"):
     partida_id, matriz, nombre_usuario = agregarMatrizPartida(partida, filas, columnas, nombre_usuario)
 
     inicio = datetime.now()
@@ -267,10 +267,10 @@ def iniciar_partida(filas: int, columnas: int, nombre_usuario: str, dificultat: 
         "jugador": nombre_usuario
     }
 
-    resultado = agregarbarcos(partida, partida_id)
+    resultado = agregarBarcos(partida, partida_id)
 
     # Calcular puntuación inicial
-    puntuacion_inicial = calcular_puntuacio(
+    puntuacion_inicial = calcularPuntuacio(
         dispars=0,
         encerts=0,
         vaixells_enfonsats=0,
@@ -358,7 +358,7 @@ def tocado(partida_id: str, x: int, y: int):
         encerts = sum(1 for x, y in impactos if matriz[x][y] != 0)
         dispars = len(impactos)
         inicio = datos.get("inicio", datetime.now())
-        puntuacion = calcular_puntuacio(
+        puntuacion = calcularPuntuacio(
         dispars=dispars,
         encerts=encerts,
         vaixells_enfonsats=sum(1 for b in barcos.values() for v in b if len(v["posiciones"]) == 0),
@@ -405,7 +405,7 @@ def tocado(partida_id: str, x: int, y: int):
 
     if barcos_destruidos == total_barcos:
         estado = "victoria"
-    elif casillas_destapadas > umbral_derrota(datos.get("dificultat", "easy")) * len(matriz) * len(matriz[0]):
+    elif casillas_destapadas > umbralDerrota(datos.get("dificultat", "easy")) * len(matriz) * len(matriz[0]):
         estado = "derrota"
 
     datos["estado"] = estado
@@ -417,7 +417,7 @@ def tocado(partida_id: str, x: int, y: int):
     duracion = datetime.now() - inicio
     duracion_ms = int(duracion.total_seconds() * 1000)
 
-    puntuacion = calcular_puntuacio(
+    puntuacion = calcularPuntuacio(
         dispars=dispars,
         encerts=encerts,
         vaixells_enfonsats=barcos_destruidos,
@@ -431,7 +431,7 @@ def tocado(partida_id: str, x: int, y: int):
 
     # Volcar si es final
     if estado in ["victoria", "derrota"]:
-        volcar_partida_finalizada(partida_id)
+        volcarPartidaFinalizada(partida_id)
 
     # Guardar estado y puntuación
     datos["estado"] = estado
@@ -463,10 +463,9 @@ def tocado(partida_id: str, x: int, y: int):
         respuesta["posiciones_destruidas"] = posiciones_destruidas
 
     return respuesta
-
 #Funcion para ver el estado del juego en la memoria
 @app.get("/estado_juego/{partida_id}", tags=["Estado_Juego"])
-def estado_juego(partida_id: str):
+def estadoJuego(partida_id: str):
     datos = partida.get(partida_id)
     if not datos:
         return {"error": "Partida no trobada"}
@@ -505,7 +504,7 @@ def estado_juego(partida_id: str):
     }
 #Funcion para ir actualizando la puntuacion a tiempo real
 @app.get("/puntuacio_actual/{partida_id}", tags=["Partida"])
-def puntuacio_actual(partida_id: str):
+def puntuacioActual(partida_id: str):
     datos = partida.get(partida_id)
     if not datos:
         return {"error": "Partida no trobada"}
@@ -520,7 +519,7 @@ def puntuacio_actual(partida_id: str):
     dispars = len(impactos)
     vaixells_enfonsats = sum(1 for b in barcos.values() for v in b if len(v["posiciones"]) == 0)
 
-    puntuacio = calcular_puntuacio(
+    puntuacio = calcularPuntuacio(
         dispars=dispars,
         encerts=encerts,
         vaixells_enfonsats=vaixells_enfonsats,
@@ -534,7 +533,7 @@ def puntuacio_actual(partida_id: str):
     return {"puntuacion": puntuacio}
 #Funcion para abandonar el juego
 @app.get("/abandonar/{partida_id}", tags=["Partida"])
-def abandonar_partida(partida_id: str):
+def abandonarPartida(partida_id: str):
     datos = partida.get(partida_id)
     if not datos:
         return {"error": "Partida no trobada"}
@@ -543,7 +542,7 @@ def abandonar_partida(partida_id: str):
     datos["data_fi"] = datetime.now().isoformat()
     datos["puntuacion"] = 0
 
-    volcar_partida_finalizada(partida_id)
+    volcarPartidaFinalizada(partida_id)
 
     return {
         "jugador": datos["jugador"],

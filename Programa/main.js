@@ -61,7 +61,9 @@ guardar.addEventListener("click", (event) => {
     });
 });
 
-tabla.addEventListener("click", event => {
+tabla.addEventListener("click", (event) => {
+  event.preventDefault();
+  event.stopPropagation();
   const celda = event.target;
   if (celda.tagName !== "TD") return;
   if (celda.classList.contains("agua") || celda.classList.contains("impacto") || celda.classList.contains("hundido")) return;
@@ -171,7 +173,9 @@ document.getElementById("ver_estado").addEventListener("click", () => {
     .catch(error => console.error("Error al obtener estado de juego:", error));
 });
 
-document.querySelector(".btn.rojo").addEventListener("click", () => {
+document.querySelector(".btn.rojo").addEventListener("click", (event) => {
+  event.preventDefault();
+  event.stopPropagation();
   if (!partidaID) return alert("No hi ha partida activa");
 
   clearInterval(intervaloPuntuacion);
@@ -224,29 +228,33 @@ function crearTabla(matriz) {
 }
 
 function actualizarMarcador(puntuacion) {
-  marcador.textContent = `${puntuacion} punts`;
+  while (marcador.firstChild) {
+    marcador.removeChild(marcador.firstChild);
+  }
+  const puntos = document.createTextNode(`${puntuacion} punts`);
+  marcador.appendChild(puntos);
   actualizarColor(puntuacion);
 }
 
 function actualizarColor(puntuacion) {
-  marcador.classList.remove("easy", "medium", "hard", "baja", "media", "alta");
+  const dificultad = dificultadSeleccionada; // "easy", "medium" o "hard"
+  const nivel =
+    puntuacion >= 500 ? "alta" :
+    puntuacion >= 200 ? "media" :
+    "baja";
 
-  marcador.classList.add(dificultadSeleccionada);
-
-  if (puntuacion >= 500) {
-    marcador.classList.add("alta");
-  } else if (puntuacion >= 200) {
-    marcador.classList.add("media");
-  } else {
-    marcador.classList.add("baja");
-  }
+  const claseFinal = `score ${dificultad} ${nivel}`;
+  marcador.setAttribute("class", claseFinal);
 }
 
 function mostrarEstadoFinal(info) {
-  estado_juego.innerHTML = "";
+  while(estado_juego.firstChild()){
+    estado_juego.removeChild(estado_juego.firstChild())
+  }
 
   const titulo = document.createElement("h4");
   titulo.appendChild(document.createTextNode(`Partida ${info.estat}`));
+  titulo.appendChild(textoTitulo)
   estado_juego.appendChild(titulo);
 
   const datos = [
@@ -267,14 +275,54 @@ function mostrarEstadoFinal(info) {
 }
 
 function actualizarEstadisticasVisuales(data) {
-  document.getElementById("jugador").textContent = `Jugador: ${data.jugador}`;
+  // Actualizar jugador
+  const jugador = document.getElementById("jugador");
+  const nuevoJugador = document.createTextNode(`Jugador: ${data.jugador}`);
+  if (jugador.firstChild) {
+    jugador.replaceChild(nuevoJugador, jugador.firstChild);
+  } else {
+    jugador.appendChild(nuevoJugador);
+  }
+
+  // Actualizar estado
   const estadoTexto = document.querySelector(".container h4");
-  estadoTexto.textContent = `Estado: ${data.estat}`;
+  const nuevoEstado = document.createTextNode(`Estado: ${data.estat}`);
+  if (estadoTexto.firstChild) {
+    estadoTexto.replaceChild(nuevoEstado, estadoTexto.firstChild);
+  } else {
+    estadoTexto.appendChild(nuevoEstado);
+  }
 
+  // Actualizar estadísticas
   const stats = document.querySelectorAll(".stat");
-  stats[0].textContent = `Hits: ${data.impactos_barco}`;
-  stats[1].textContent = `Misses: ${data.impactos_agua}`;
-  stats[2].textContent = `Ships Sunk: ${data.vaixells_enfonsats}`;
 
-  document.getElementById("jugadas").textContent = data.caselles_destapades;
+  const nuevoHits = document.createTextNode(`Hits: ${data.impactos_barco}`);
+  if (stats[0].firstChild) {
+    stats[0].replaceChild(nuevoHits, stats[0].firstChild);
+  } else {
+    stats[0].appendChild(nuevoHits);
+  }
+
+  const nuevoMisses = document.createTextNode(`Misses: ${data.impactos_agua}`);
+  if (stats[1].firstChild) {
+    stats[1].replaceChild(nuevoMisses, stats[1].firstChild);
+  } else {
+    stats[1].appendChild(nuevoMisses);
+  }
+
+  const nuevoHundidos = document.createTextNode(`Ships Sunk: ${data.vaixells_enfonsats}`);
+  if (stats[2].firstChild) {
+    stats[2].replaceChild(nuevoHundidos, stats[2].firstChild);
+  } else {
+    stats[2].appendChild(nuevoHundidos);
+  }
+
+  // Actualizar jugadas
+  const jugadas = document.getElementById("jugadas");
+  const nuevoJugadas = document.createTextNode(data.caselles_destapades);
+  if (jugadas.firstChild) {
+    jugadas.replaceChild(nuevoJugadas, jugadas.firstChild);
+  } else {
+    jugadas.appendChild(nuevoJugadas);
+  }
 }
