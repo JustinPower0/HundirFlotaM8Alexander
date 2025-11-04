@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ca">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,7 +11,7 @@
 <body>
   <div class="layout">
 
-    <!-- BLOQUE 1: FORMULARIO -->
+    
     <div id="formulario">
       <h4>Configuració del Joc</h4>
 
@@ -55,37 +56,55 @@
       <img src="img/mando.jpg" alt="Imagen mando" class="decoracion-izquierda">
     </div>
 
-    <!-- BLOQUE 3: MARCADOR (ahora antes de la tabla en tablet) -->
     <div class="container">
-      <h3 id="marcador">Marcador</h3>
-      <div class="score" id="puntos">0 punts</div>
-      <h3>Estadístiques</h3>
-      <h3 id="jugador">Jugador: ANGELITO</h3>
-      <h4>Estat del jugador</h4>
-      <div class="stats">
-        <div class="stat">Hits: 5</div>
-        <div class="stat">Misses: 10</div>
-        <div class="stat">Ships Sunk: 1</div>
+      
+      <div class="col marcador">
+        <h3>Marcador</h3>
+        <div class="score" id="puntos">0 punts</div>
+        <h3 id="jugador">Jugador: ANGELITO</h3>
       </div>
-      <h4>Nombre de Jugades</h4>
-      <h3 id="jugadas">15</h3>
 
+     
+      <div class="col estadisticas">
+        <h3>Estadístiques</h3>
+        <div class="stats">
+          <div class="stat">Hits: 5</div>
+          <div class="stat">Misses: 10</div>
+          <div class="stat">Ships Sunk: 1</div>
+        </div>
+      </div>
+
+      <div class="col estado">
+        <h4>Estat del jugador</h4>
+        <h3 id="estado">15</h3>
+        <h4>Nombre de Jugades</h4>
+        <h3 id="jugadas">15</h3>
+      </div>
       <img src="img/mario.png" alt="Decoració" class="decoracion-mario">
     </div>
 
-    <!-- BLOQUE 2: TABLERO -->
     <div class="tablero-contenedor">
       <table id="tablero">
         <tbody>
-          <!-- Aquí se generan las celdas dinámicamente -->
         </tbody>
       </table>
-      <button id="fire">Disparo</button>
-    </div>
 
-  </div> <!-- FIN layout -->
+      <button id="fire">Disparo</button>
+      <div id="ranking">
+        <h2>Estadísticas Globales</h2>
+        <p>Total partidas: <span id="total_partides">-</span></p>
+        <p>Mejor puntuación: <span id="millor_puntuacio">-</span></p>
+        <p>Jugador: <span id="millor_jugador">-</span></p>
+        <p>Fecha: <span id="data_millor">-</span></p>
+        <h3>Ranking Top 5</h3>
+        <ol id="ranking_list"></ol>
+      </div>
+
+    </div>
+  </div>
 
   <div id="estado_juego"></div>
   <script src="main.js"></script>
 </body>
+
 </html>

@@ -122,37 +122,24 @@ estadisticas.addEventListener("click", (event) => {
   fetch("http://127.0.0.1:8000/estadisticas")
     .then(response => response.json())
     .then(data => {
-      estado_juego.innerHTML = "";
-      const titulo = document.createElement("h4");
-      titulo.appendChild(document.createTextNode("Estadístiques globals"));
-      estado_juego.appendChild(titulo);
+      // Rellenar estadísticas globales
+      document.getElementById("total_partides").textContent = data.total_partides;
+      document.getElementById("millor_puntuacio").textContent = data.millor_puntuacio;
+      document.getElementById("millor_jugador").textContent = data.millor_jugador;
+      document.getElementById("data_millor").textContent = data.data_millor;
 
-      const datos = [
-        [`Total partides:`, data.total_partides],
-        [`Millor puntuació:`, `${data.millor_puntuacio} (${data.millor_jugador})`],
-        [`Data millor:`, data.data_millor]
-      ];
-
-      datos.forEach(([label, valor]) => {
-        const p = document.createElement("p");
-        p.appendChild(document.createTextNode(`${label} ${valor}`));
-        estado_juego.appendChild(p);
-      });
-
-      const subtitulo = document.createElement("h5");
-      subtitulo.appendChild(document.createTextNode("Rànquing:"));
-      estado_juego.appendChild(subtitulo);
-
-      const lista = document.createElement("ol");
+      // Rellenar ranking
+      const rankingList = document.getElementById("ranking_list");
+      rankingList.innerHTML = ""; // limpia antes de agregar
       data.rànquing_top5.forEach(p => {
         const li = document.createElement("li");
-        li.appendChild(document.createTextNode(`${p.jugador} - ${p.puntuacio} punts (${p.files}x${p.columnes})`));
-        lista.appendChild(li);
+        li.textContent = `${p.jugador} - ${p.puntuacio} puntos (${p.files}x${p.columnes})`;
+        rankingList.appendChild(li);
       });
-      estado_juego.appendChild(lista);
     })
     .catch(error => console.error("Error al obtener estadísticas:", error));
 });
+
 
 document.getElementById("ver_estado").addEventListener("click", () => {
   if (!partidaID) return alert("No hi ha partida activa");

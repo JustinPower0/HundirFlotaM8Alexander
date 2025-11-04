@@ -1,0 +1,949 @@
+{
+  "matriz": [
+    [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      2,
+      0,
+      4
+    ],
+    [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      2,
+      0,
+      4
+    ],
+    [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      4
+    ],
+    [
+      0,
+      0,
+      0,
+      5,
+      5,
+      5,
+      5,
+      5,
+      0,
+      4
+    ],
+    [
+      0,
+      0,
+      0,
+      3,
+      3,
+      3,
+      0,
+      0,
+      0,
+      1
+    ],
+    [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      5,
+      5,
+      5,
+      5,
+      5,
+      4,
+      4,
+      4,
+      4
+    ],
+    [
+      0,
+      0,
+      2,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      2,
+      0,
+      0,
+      0,
+      0,
+      0,
+      2,
+      2
+    ],
+    [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ]
+  ],
+  "barcos": {
+    "submari": [
+      {
+        "id": 1,
+        "posiciones": [
+          [
+            4,
+            9
+          ]
+        ]
+      }
+    ],
+    "destructor": [
+      {
+        "id": 1,
+        "posiciones": [
+          [
+            7,
+            2
+          ]
+        ]
+      },
+      {
+        "id": 2,
+        "posiciones": []
+      },
+      {
+        "id": 3,
+        "posiciones": []
+      }
+    ],
+    "creuer": [
+      {
+        "id": 1,
+        "posiciones": [
+          [
+            4,
+            5
+          ]
+        ]
+      }
+    ],
+    "cuirassat": [
+      {
+        "id": 1,
+        "posiciones": [
+          [
+            6,
+            6
+          ]
+        ]
+      },
+      {
+        "id": 2,
+        "posiciones": [
+          [
+            2,
+            9
+          ],
+          [
+            3,
+            9
+          ]
+        ]
+      }
+    ],
+    "portaavions": [
+      {
+        "id": 1,
+        "posiciones": [
+          [
+            3,
+            3
+          ]
+        ]
+      },
+      {
+        "id": 2,
+        "posiciones": [
+          [
+            6,
+            1
+          ],
+          [
+            6,
+            2
+          ],
+          [
+            6,
+            3
+          ],
+          [
+            6,
+            4
+          ],
+          [
+            6,
+            5
+          ]
+        ]
+      }
+    ]
+  },
+  "impactos": [
+    [
+      3,
+      4
+    ],
+    [
+      4,
+      3
+    ],
+    [
+      3,
+      7
+    ],
+    [
+      9,
+      2
+    ],
+    [
+      8,
+      0
+    ],
+    [
+      9,
+      5
+    ],
+    [
+      8,
+      3
+    ],
+    [
+      8,
+      9
+    ],
+    [
+      0,
+      2
+    ],
+    [
+      9,
+      8
+    ],
+    [
+      8,
+      6
+    ],
+    [
+      0,
+      5
+    ],
+    [
+      1,
+      0
+    ],
+    [
+      1,
+      6
+    ],
+    [
+      0,
+      8
+    ],
+    [
+      2,
+      5
+    ],
+    [
+      1,
+      3
+    ],
+    [
+      1,
+      9
+    ],
+    [
+      2,
+      8
+    ],
+    [
+      7,
+      7
+    ],
+    [
+      6,
+      8
+    ],
+    [
+      3,
+      6
+    ],
+    [
+      8,
+      2
+    ],
+    [
+      9,
+      1
+    ],
+    [
+      9,
+      7
+    ],
+    [
+      8,
+      5
+    ],
+    [
+      0,
+      1
+    ],
+    [
+      8,
+      8
+    ],
+    [
+      2,
+      4
+    ],
+    [
+      0,
+      7
+    ],
+    [
+      0,
+      4
+    ],
+    [
+      1,
+      2
+    ],
+    [
+      2,
+      7
+    ],
+    [
+      1,
+      5
+    ],
+    [
+      1,
+      8
+    ],
+    [
+      7,
+      9
+    ],
+    [
+      6,
+      7
+    ],
+    [
+      3,
+      2
+    ],
+    [
+      3,
+      5
+    ],
+    [
+      4,
+      4
+    ],
+    [
+      9,
+      0
+    ],
+    [
+      8,
+      4
+    ],
+    [
+      9,
+      3
+    ],
+    [
+      8,
+      1
+    ],
+    [
+      8,
+      7
+    ],
+    [
+      0,
+      0
+    ],
+    [
+      1,
+      1
+    ],
+    [
+      0,
+      3
+    ],
+    [
+      0,
+      9
+    ],
+    [
+      1,
+      4
+    ],
+    [
+      0,
+      6
+    ],
+    [
+      2,
+      3
+    ],
+    [
+      1,
+      7
+    ],
+    [
+      2,
+      6
+    ],
+    [
+      6,
+      9
+    ],
+    [
+      7,
+      8
+    ]
+  ],
+  "inicio": "2025-11-04T16:13:11.476174",
+  "estado": "derrota",
+  "dificultat": "medium",
+  "traza": [
+    {
+      "coordenada": [
+        3,
+        2
+      ],
+      "resultado": "Agua",
+      "timestamp": "2025-11-04T16:13:12.110641"
+    },
+    {
+      "coordenada": [
+        4,
+        3
+      ],
+      "resultado": "impacto",
+      "tipo_barco": "creuer",
+      "id_barco": 1,
+      "destruido": false,
+      "timestamp": "2025-11-04T16:13:12.849018"
+    },
+    {
+      "coordenada": [
+        4,
+        4
+      ],
+      "resultado": "impacto",
+      "tipo_barco": "creuer",
+      "id_barco": 1,
+      "destruido": false,
+      "timestamp": "2025-11-04T16:13:13.292408"
+    },
+    {
+      "coordenada": [
+        3,
+        5
+      ],
+      "resultado": "impacto",
+      "tipo_barco": "portaavions",
+      "id_barco": 1,
+      "destruido": false,
+      "timestamp": "2025-11-04T16:13:13.867326"
+    },
+    {
+      "coordenada": [
+        2,
+        5
+      ],
+      "resultado": "Agua",
+      "timestamp": "2025-11-04T16:13:14.346427"
+    },
+    {
+      "coordenada": [
+        1,
+        5
+      ],
+      "resultado": "Agua",
+      "timestamp": "2025-11-04T16:13:14.799726"
+    },
+    {
+      "coordenada": [
+        0,
+        6
+      ],
+      "resultado": "Agua",
+      "timestamp": "2025-11-04T16:13:15.348710"
+    },
+    {
+      "coordenada": [
+        1,
+        6
+      ],
+      "resultado": "Agua",
+      "timestamp": "2025-11-04T16:13:15.731937"
+    },
+    {
+      "coordenada": [
+        1,
+        7
+      ],
+      "resultado": "impacto",
+      "tipo_barco": "destructor",
+      "id_barco": 2,
+      "destruido": false,
+      "timestamp": "2025-11-04T16:13:16.084648"
+    },
+    {
+      "coordenada": [
+        2,
+        8
+      ],
+      "resultado": "Agua",
+      "timestamp": "2025-11-04T16:13:16.542250"
+    },
+    {
+      "coordenada": [
+        6,
+        7
+      ],
+      "resultado": "impacto",
+      "tipo_barco": "cuirassat",
+      "id_barco": 1,
+      "destruido": false,
+      "timestamp": "2025-11-04T16:13:17.588134"
+    },
+    {
+      "coordenada": [
+        7,
+        7
+      ],
+      "resultado": "Agua",
+      "timestamp": "2025-11-04T16:13:18.192725"
+    },
+    {
+      "coordenada": [
+        7,
+        8
+      ],
+      "resultado": "Agua",
+      "timestamp": "2025-11-04T16:13:18.547075"
+    },
+    {
+      "coordenada": [
+        6,
+        8
+      ],
+      "resultado": "impacto",
+      "tipo_barco": "cuirassat",
+      "id_barco": 1,
+      "destruido": false,
+      "timestamp": "2025-11-04T16:13:18.977661"
+    },
+    {
+      "coordenada": [
+        6,
+        9
+      ],
+      "resultado": "impacto",
+      "tipo_barco": "cuirassat",
+      "id_barco": 1,
+      "destruido": false,
+      "timestamp": "2025-11-04T16:13:19.456021"
+    },
+    {
+      "coordenada": [
+        7,
+        9
+      ],
+      "resultado": "Agua",
+      "timestamp": "2025-11-04T16:13:19.850284"
+    },
+    {
+      "coordenada": [
+        8,
+        9
+      ],
+      "resultado": "impacto",
+      "tipo_barco": "destructor",
+      "id_barco": 3,
+      "destruido": false,
+      "timestamp": "2025-11-04T16:13:20.234821"
+    },
+    {
+      "coordenada": [
+        8,
+        8
+      ],
+      "resultado": "impacto",
+      "tipo_barco": "destructor",
+      "id_barco": 3,
+      "destruido": true,
+      "timestamp": "2025-11-04T16:13:20.603150"
+    },
+    {
+      "coordenada": [
+        8,
+        7
+      ],
+      "resultado": "Agua",
+      "timestamp": "2025-11-04T16:13:21.193480"
+    },
+    {
+      "coordenada": [
+        8,
+        6
+      ],
+      "resultado": "Agua",
+      "timestamp": "2025-11-04T16:13:21.636361"
+    },
+    {
+      "coordenada": [
+        8,
+        5
+      ],
+      "resultado": "Agua",
+      "timestamp": "2025-11-04T16:13:22.154763"
+    },
+    {
+      "coordenada": [
+        8,
+        4
+      ],
+      "resultado": "Agua",
+      "timestamp": "2025-11-04T16:13:22.734282"
+    },
+    {
+      "coordenada": [
+        8,
+        3
+      ],
+      "resultado": "Agua",
+      "timestamp": "2025-11-04T16:13:23.173710"
+    },
+    {
+      "coordenada": [
+        8,
+        2
+      ],
+      "resultado": "impacto",
+      "tipo_barco": "destructor",
+      "id_barco": 1,
+      "destruido": false,
+      "timestamp": "2025-11-04T16:13:23.667309"
+    },
+    {
+      "coordenada": [
+        8,
+        1
+      ],
+      "resultado": "Agua",
+      "timestamp": "2025-11-04T16:13:24.113913"
+    },
+    {
+      "coordenada": [
+        8,
+        0
+      ],
+      "resultado": "Agua",
+      "timestamp": "2025-11-04T16:13:24.650390"
+    },
+    {
+      "coordenada": [
+        9,
+        0
+      ],
+      "resultado": "Agua",
+      "timestamp": "2025-11-04T16:13:25.037160"
+    },
+    {
+      "coordenada": [
+        9,
+        1
+      ],
+      "resultado": "Agua",
+      "timestamp": "2025-11-04T16:13:25.359179"
+    },
+    {
+      "coordenada": [
+        9,
+        2
+      ],
+      "resultado": "Agua",
+      "timestamp": "2025-11-04T16:13:25.727220"
+    },
+    {
+      "coordenada": [
+        9,
+        3
+      ],
+      "resultado": "Agua",
+      "timestamp": "2025-11-04T16:13:26.065413"
+    },
+    {
+      "coordenada": [
+        9,
+        5
+      ],
+      "resultado": "Agua",
+      "timestamp": "2025-11-04T16:13:26.399201"
+    },
+    {
+      "coordenada": [
+        9,
+        7
+      ],
+      "resultado": "Agua",
+      "timestamp": "2025-11-04T16:13:26.774014"
+    },
+    {
+      "coordenada": [
+        9,
+        8
+      ],
+      "resultado": "Agua",
+      "timestamp": "2025-11-04T16:13:27.097070"
+    },
+    {
+      "coordenada": [
+        2,
+        3
+      ],
+      "resultado": "Agua",
+      "timestamp": "2025-11-04T16:13:31.098620"
+    },
+    {
+      "coordenada": [
+        2,
+        4
+      ],
+      "resultado": "Agua",
+      "timestamp": "2025-11-04T16:13:32.044548"
+    },
+    {
+      "coordenada": [
+        3,
+        4
+      ],
+      "resultado": "impacto",
+      "tipo_barco": "portaavions",
+      "id_barco": 1,
+      "destruido": false,
+      "timestamp": "2025-11-04T16:13:33.119053"
+    },
+    {
+      "coordenada": [
+        3,
+        6
+      ],
+      "resultado": "impacto",
+      "tipo_barco": "portaavions",
+      "id_barco": 1,
+      "destruido": false,
+      "timestamp": "2025-11-04T16:13:34.675450"
+    },
+    {
+      "coordenada": [
+        1,
+        8
+      ],
+      "resultado": "Agua",
+      "timestamp": "2025-11-04T16:13:38.009680"
+    },
+    {
+      "coordenada": [
+        1,
+        9
+      ],
+      "resultado": "impacto",
+      "tipo_barco": "cuirassat",
+      "id_barco": 2,
+      "destruido": false,
+      "timestamp": "2025-11-04T16:13:38.885542"
+    },
+    {
+      "coordenada": [
+        0,
+        9
+      ],
+      "resultado": "impacto",
+      "tipo_barco": "cuirassat",
+      "id_barco": 2,
+      "destruido": false,
+      "timestamp": "2025-11-04T16:13:39.326655"
+    },
+    {
+      "coordenada": [
+        0,
+        8
+      ],
+      "resultado": "Agua",
+      "timestamp": "2025-11-04T16:13:39.971087"
+    },
+    {
+      "coordenada": [
+        0,
+        7
+      ],
+      "resultado": "impacto",
+      "tipo_barco": "destructor",
+      "id_barco": 2,
+      "destruido": true,
+      "timestamp": "2025-11-04T16:13:40.872916"
+    },
+    {
+      "coordenada": [
+        0,
+        5
+      ],
+      "resultado": "Agua",
+      "timestamp": "2025-11-04T16:13:41.994316"
+    },
+    {
+      "coordenada": [
+        0,
+        3
+      ],
+      "resultado": "Agua",
+      "timestamp": "2025-11-04T16:13:43.089297"
+    },
+    {
+      "coordenada": [
+        0,
+        4
+      ],
+      "resultado": "Agua",
+      "timestamp": "2025-11-04T16:13:43.415956"
+    },
+    {
+      "coordenada": [
+        0,
+        2
+      ],
+      "resultado": "Agua",
+      "timestamp": "2025-11-04T16:13:43.998028"
+    },
+    {
+      "coordenada": [
+        0,
+        1
+      ],
+      "resultado": "Agua",
+      "timestamp": "2025-11-04T16:13:44.341888"
+    },
+    {
+      "coordenada": [
+        0,
+        0
+      ],
+      "resultado": "Agua",
+      "timestamp": "2025-11-04T16:13:45.038698"
+    },
+    {
+      "coordenada": [
+        1,
+        0
+      ],
+      "resultado": "Agua",
+      "timestamp": "2025-11-04T16:13:45.371928"
+    },
+    {
+      "coordenada": [
+        1,
+        1
+      ],
+      "resultado": "Agua",
+      "timestamp": "2025-11-04T16:13:45.719737"
+    },
+    {
+      "coordenada": [
+        1,
+        2
+      ],
+      "resultado": "Agua",
+      "timestamp": "2025-11-04T16:13:46.041946"
+    },
+    {
+      "coordenada": [
+        1,
+        3
+      ],
+      "resultado": "Agua",
+      "timestamp": "2025-11-04T16:13:46.361367"
+    },
+    {
+      "coordenada": [
+        1,
+        4
+      ],
+      "resultado": "Agua",
+      "timestamp": "2025-11-04T16:13:46.662107"
+    },
+    {
+      "coordenada": [
+        2,
+        6
+      ],
+      "resultado": "Agua",
+      "timestamp": "2025-11-04T16:13:47.287189"
+    },
+    {
+      "coordenada": [
+        2,
+        7
+      ],
+      "resultado": "Agua",
+      "timestamp": "2025-11-04T16:13:47.703555"
+    }
+  ],
+  "puntuacion": 1122,
+  "duracion_ms": 36700,
+  "jugador": "JUSTIN OVIEDO ZAMBRANO",
+  "impactos_barco": 16,
+  "impactos_agua": 40,
+  "data_fi": "2025-11-04T16:13:48.177947"
+}
