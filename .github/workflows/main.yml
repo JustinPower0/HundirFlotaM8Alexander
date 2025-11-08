@@ -1,0 +1,76 @@
+name: FastAPI + JS Demo
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Clonar el repositorio
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # 2. Configurar Python
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      # 3. Instalar dependencias
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      # 4. Ir a la carpeta FastApi y levantar el servidor
+      - name: Start FastAPI server
+        working-directory: FastApi
+        run: |
+          nohup uvicorn main:app --reload --host 0.0.0.0 --port 8000 &
+
+      # 5. Esperar a que el servidor esté listo
+      - name: Wait for FastAPI
+        run: |
+          echo "Esperando a que FastAPI arranque..."
+          until curl --silent --fail http://127.0.0.1:8000; do
+            echo "FastAPI no listo, esperando 2s..."
+            sleep 2
+          done
+          echo "FastAPI listo en http://127.0.0.1:8000"
+
+      # 6. Instalar Ngrok
+      - name: Install Ngrok v3
+        run: |
+          curl -sLo ngrok.zip https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3-stable-linux-amd64.zip
+          unzip -o ngrok.zip
+          sudo mv ngrok /usr/local/bin/
+          sudo chmod +x /usr/local/bin/
+          ngrok version
+
+      # 7. Autenticación Ngrok
+      - name: Authenticate Ngrok
+        run: ngrok config add-authtoken ${{ secrets.NGROK_AUTHTOKEN }}
+
+      # 8. Levantar túnel Ngrok
+      - name: Start Ngrok tunnel
+        id: ngrok
+        run: |
+          ngrok http 8000 --log=stdout > ngrok.log &
+          sleep 5
+          NGROK_URL=$(curl --silent http://127.0.0.1:4040/api/tunnels | grep -oP '"public_url":"\Khttps://[^"]+')
+          echo "NGROK_URL=$NGROK_URL" >> $GITHUB_ENV
+          echo "::notice title=URL pública::$NGROK_URL"
+
+      # 9. Testear endpoints opcionalmente
+      - name: Test API endpoint
+        run: |
+          curl ${{ env.NGROK_URL }}/docs
+
+      # 10. Mantener job vivo mientras Ngrok corre
+      - name: Keep job alive
+        run: tail -f ngrok.log & wait
