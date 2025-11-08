@@ -25,25 +25,25 @@ jobs:
       - name: Install Python dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -r requirements.txt
+          pip install -r FastApi/requirements.txt
 
-      # 4. Ir a la carpeta FastApi y levantar el servidor
+      # 4. Levantar FastAPI en background
       - name: Start FastAPI server
         working-directory: FastApi
         run: |
-          nohup uvicorn main:app --reload --host 0.0.0.0 --port 8000 &
-
-      # 5. Esperar a que el servidor esté listo
-      - name: Wait for FastAPI
-        run: |
+          echo "Iniciando FastAPI..."
+          uvicorn main:app --host 0.0.0.0 --port 8000 &
           echo "Esperando a que FastAPI arranque..."
-          until curl --silent --fail http://127.0.0.1:8000; do
+          for i in {1..30}; do
+            if curl --silent --fail http://127.0.0.1:8000/ping; then
+              echo "FastAPI listo!"
+              break
+            fi
             echo "FastAPI no listo, esperando 2s..."
             sleep 2
           done
-          echo "FastAPI listo en http://127.0.0.1:8000"
 
-      # 6. Instalar Ngrok
+      # 5. Instalar Ngrok
       - name: Install Ngrok v3
         run: |
           curl -sLo ngrok.zip https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3-stable-linux-amd64.zip
@@ -52,11 +52,11 @@ jobs:
           sudo chmod +x /usr/local/bin/
           ngrok version
 
-      # 7. Autenticación Ngrok
+      # 6. Autenticación Ngrok
       - name: Authenticate Ngrok
         run: ngrok config add-authtoken ${{ secrets.NGROK_AUTHTOKEN }}
 
-      # 8. Levantar túnel Ngrok
+      # 7. Levantar túnel Ngrok
       - name: Start Ngrok tunnel
         id: ngrok
         run: |
@@ -66,11 +66,11 @@ jobs:
           echo "NGROK_URL=$NGROK_URL" >> $GITHUB_ENV
           echo "::notice title=URL pública::$NGROK_URL"
 
-      # 9. Testear endpoints opcionalmente
+      # 8. Testear endpoints opcionalmente
       - name: Test API endpoint
         run: |
           curl ${{ env.NGROK_URL }}/docs
 
-      # 10. Mantener job vivo mientras Ngrok corre
+      # 9. Mantener job vivo mientras Ngrok corre
       - name: Keep job alive
         run: tail -f ngrok.log & wait
