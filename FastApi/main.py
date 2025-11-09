@@ -5,6 +5,8 @@ import uuid
 import json
 import os
 from datetime import datetime
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 
 # Variables
 partida = {}
@@ -170,11 +172,14 @@ def volcarPartidaFinalizada(partida_id: str):
 
 # Crear app FastAPI
 app = FastAPI(title="Mi Projecto", version="0.0.1")
+app.mount("/static", StaticFiles(directory="../Programa"), name="static")
 
+# Mostrar el juego en la raíz
 @app.get("/")
-def root():
-    return {"message": "Bienvenido a mi API 🚀"}
+async def serve_home():
+    return FileResponse("../Programa/index.html")
 
+# Endpoint de prueba
 @app.get("/ping")
 def ping():
     return {"status": "ok"}
