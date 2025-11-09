@@ -171,6 +171,10 @@ def volcarPartidaFinalizada(partida_id: str):
 # Crear app FastAPI
 app = FastAPI(title="Mi Projecto", version="0.0.1")
 
+@app.get("/")
+def root():
+    return {"message": "Bienvenido a mi API 🚀"}
+
 @app.get("/ping")
 def ping():
     return {"status": "ok"}
