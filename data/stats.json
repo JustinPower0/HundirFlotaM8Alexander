@@ -1,0 +1,16 @@
+{
+  "total_partides": 1,
+  "millor_puntuacio": 0,
+  "millor_jugador": "",
+  "data_millor": "",
+  "rànquing_top5": [
+    {
+      "jugador": "hgg",
+      "puntuacio": 0,
+      "files": 10,
+      "columnes": 10,
+      "data": "2025-11-09T19:17:10.406749",
+      "duracio_ms": 7521
+    }
+  ]
+}
