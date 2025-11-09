@@ -1,4 +1,4 @@
-let tabla = document.getElementById("tablero");
+let tabla = document.getElementById("tablero"); 
 let guardar = document.getElementById("guardar");
 let estadisticas = document.getElementById("estadisticas");
 let estado_juego = document.getElementById("estado_juego");
@@ -15,7 +15,6 @@ guardar.addEventListener("click", (event) => {
   const altura = document.getElementById("altura");
 
   let camposInvalidos = [];
-
   if (nombre.value === "") camposInvalidos.push(nombre);
   if (ampliada.value === "") camposInvalidos.push(ampliada);
   if (altura.value === "") camposInvalidos.push(altura);
@@ -26,9 +25,9 @@ guardar.addEventListener("click", (event) => {
     const aviso = document.createElement("p");
     aviso.setAttribute("id", "aviso_campos");
     aviso.setAttribute("class", "error_mensaje");
-    aviso.appendChild(document.createTextNode("Completa todos los campos antes de continuar."));
+    aviso.textContent = "Completa todos los campos antes de continuar.";
 
-    while (estado_juego.firstChild) estado_juego.removeChild(estado_juego.firstChild);
+    estado_juego.innerHTML = "";
     estado_juego.appendChild(aviso);
     return;
   }
@@ -54,9 +53,7 @@ guardar.addEventListener("click", (event) => {
       intervaloPuntuacion = setInterval(() => {
         fetch(`http://127.0.0.1:8000/puntuacio_actual/${partidaID}`)
           .then(res => res.json())
-          .then(data => {
-            actualizarMarcador(data.puntuacion);
-          });
+          .then(data => actualizarMarcador(data.puntuacion));
       }, 1000);
     });
 });
@@ -93,18 +90,16 @@ tabla.addEventListener("click", (event) => {
             if (celdaHundida) {
               celdaHundida.setAttribute("class", "hundido");
               celdaHundida.setAttribute("data-activa", "false");
-              celdaHundida.innerHTML = "";
-              celdaHundida.appendChild(document.createTextNode("☠️"));
+              celdaHundida.textContent = "☠️";
             }
           });
         }
       }
 
-      // 🔁 Actualizar estadísticas visuales en tiempo real
       fetch(`http://127.0.0.1:8000/estado_juego/${partidaID}`)
         .then(res => res.json())
         .then(info => {
-          actualizarEstadisticasVisuales(info); // ← actualiza el div .container
+          actualizarEstadisticasVisuales(info);
 
           if (data.estado === "victoria" || data.estado === "derrota") {
             clearInterval(intervaloPuntuacion);
@@ -112,7 +107,7 @@ tabla.addEventListener("click", (event) => {
             document.querySelectorAll("#tablero td").forEach(celda => {
               celda.setAttribute("data-activa", "false");
             });
-            alert(info.estat === "victoria" ? "🎉 Has guanyat la partida!" : "💀 Has perdut la partida...");
+            alert(info.estat === "victoria" ? "🎉 Has ganado!" : "💀 Has perdido...");
           }
         });
     })
@@ -124,15 +119,13 @@ estadisticas.addEventListener("click", (event) => {
   fetch("http://127.0.0.1:8000/estadisticas")
     .then(response => response.json())
     .then(data => {
-      // Rellenar estadísticas globales
       document.getElementById("total_partides").textContent = data.total_partides;
       document.getElementById("millor_puntuacio").textContent = data.millor_puntuacio;
       document.getElementById("millor_jugador").textContent = data.millor_jugador;
       document.getElementById("data_millor").textContent = data.data_millor;
 
-      // Rellenar ranking
       const rankingList = document.getElementById("ranking_list");
-      rankingList.innerHTML = ""; // limpia antes de agregar
+      rankingList.innerHTML = "";
       data.rànquing_top5.forEach(p => {
         const li = document.createElement("li");
         li.textContent = `${p.jugador} - ${p.puntuacio} puntos (${p.files}x${p.columnes})`;
@@ -142,31 +135,30 @@ estadisticas.addEventListener("click", (event) => {
     .catch(error => console.error("Error al obtener estadísticas:", error));
 });
 
-
 document.getElementById("ver_estado").addEventListener("click", () => {
-  if (!partidaID) return alert("No hi ha partida activa");
+  if (!partidaID) return alert("No hay partida activa");
 
   fetch(`http://127.0.0.1:8000/estado_juego/${partidaID}`)
     .then(res => res.json())
     .then(data => {
       estado_juego.innerHTML = "";
       const titulo = document.createElement("h4");
-      titulo.appendChild(document.createTextNode("Estat de la partida"));
+      titulo.textContent = "Estado de la partida";
       estado_juego.appendChild(titulo);
 
       const datos = [
-        [`Jugador:`, data.jugador],
-        [`Estat:`, data.estat],
-        [`Dificultat:`, dificultadSeleccionada],
-        [`Vaixells enfonsats:`, `${data.vaixells_enfonsats} / ${data.vaixells_totals}`],
-        [`Caselles destapades:`, data.caselles_destapades],
-        [`Inici:`, data.data_inici],
-        [`Fi:`, data.data_fi || "En curs..."]
+        ["Jugador:", data.jugador],
+        ["Estado:", data.estat],
+        ["Dificultad:", dificultadSeleccionada],
+        ["Barcos hundidos:", `${data.vaixells_enfonsats} / ${data.vaixells_totals}`],
+        ["Casillas destapadas:", data.caselles_destapades],
+        ["Inicio:", data.data_inici],
+        ["Fin:", data.data_fi || "En curso..."]
       ];
 
       datos.forEach(([label, valor]) => {
         const p = document.createElement("p");
-        p.appendChild(document.createTextNode(`${label} ${valor}`));
+        p.textContent = `${label} ${valor}`;
         estado_juego.appendChild(p);
       });
     })
@@ -176,7 +168,7 @@ document.getElementById("ver_estado").addEventListener("click", () => {
 document.querySelector(".btn.rojo").addEventListener("click", (event) => {
   event.preventDefault();
   event.stopPropagation();
-  if (!partidaID) return alert("No hi ha partida activa");
+  if (!partidaID) return alert("No hay partida activa");
 
   clearInterval(intervaloPuntuacion);
   fetch(`http://127.0.0.1:8000/abandonar/${partidaID}`)
@@ -184,21 +176,21 @@ document.querySelector(".btn.rojo").addEventListener("click", (event) => {
     .then(data => {
       estado_juego.innerHTML = "";
       const titulo = document.createElement("h4");
-      titulo.appendChild(document.createTextNode("Partida abandonada"));
+      titulo.textContent = "Partida abandonada";
       estado_juego.appendChild(titulo);
 
       const datos = [
-        [`Jugador:`, data.jugador],
-        [`Estat:`, data.estat],
-        [`Dificultat:`, dificultadSeleccionada],
-        [`Puntuació:`, data.puntuacio],
-        [`Vaixells enfonsats:`, data.vaixells_enfonsats],
-        [`Caselles destapades:`, data.caselles_destapades]
+        ["Jugador:", data.jugador],
+        ["Estado:", data.estat],
+        ["Dificultad:", dificultadSeleccionada],
+        ["Puntuación:", data.puntuacio],
+        ["Barcos hundidos:", data.vaixells_enfonsats],
+        ["Casillas destapadas:", data.caselles_destapades]
       ];
 
       datos.forEach(([label, valor]) => {
         const p = document.createElement("p");
-        p.appendChild(document.createTextNode(`${label} ${valor}`));
+        p.textContent = `${label} ${valor}`;
         estado_juego.appendChild(p);
       });
     });
@@ -210,119 +202,62 @@ function crearTabla(matriz) {
 
   for (let i = 0; i < matriz.length; i++) {
     const fila = document.createElement("tr");
-
     for (let j = 0; j < matriz[i].length; j++) {
       const celda = document.createElement("td");
-
       celda.setAttribute("data-x", i);
       celda.setAttribute("data-y", j);
       celda.setAttribute("data-valor", matriz[i][j]);
       celda.setAttribute("class", "oculto");
-      celda.textContent = "";
-
       fila.appendChild(celda);
     }
-
     tablero.appendChild(fila);
   }
 }
 
 function actualizarMarcador(puntuacion) {
-  while (marcador.firstChild) {
-    marcador.removeChild(marcador.firstChild);
-  }
-  const puntos = document.createTextNode(`${puntuacion} punts`);
-  marcador.appendChild(puntos);
+  marcador.textContent = `${puntuacion} puntos`;
   actualizarColor(puntuacion);
 }
 
 function actualizarColor(puntuacion) {
-  const dificultad = dificultadSeleccionada; // "easy", "medium" o "hard"
   const nivel =
     puntuacion >= 500 ? "alta" :
     puntuacion >= 200 ? "media" :
     "baja";
-
-  const claseFinal = `score ${dificultad} ${nivel}`;
-  marcador.setAttribute("class", claseFinal);
+  marcador.setAttribute("class", `score ${dificultadSeleccionada} ${nivel}`);
 }
 
 function mostrarEstadoFinal(info) {
-  while(estado_juego.firstChild()){
-    estado_juego.removeChild(estado_juego.firstChild())
-  }
-
+  estado_juego.innerHTML = "";
   const titulo = document.createElement("h4");
-  titulo.appendChild(document.createTextNode(`Partida ${info.estat}`));
-  titulo.appendChild(textoTitulo)
+  titulo.textContent = `Partida ${info.estat}`;
   estado_juego.appendChild(titulo);
 
   const datos = [
     ["Jugador:", info.jugador],
-    ["Dificultat:", dificultadSeleccionada],
-    ["Puntuació:", info.puntuacio],
-    ["Vaixells enfonsats:", `${info.vaixells_enfonsats} / ${info.vaixells_totals}`],
-    ["Caselles destapades:", info.caselles_destapades],
-    ["Inici:", info.data_inici],
-    ["Fi:", info.data_fi]
+    ["Dificultad:", dificultadSeleccionada],
+    ["Puntuación:", info.puntuacion],
+    ["Barcos hundidos:", `${info.vaixells_enfonsats} / ${info.vaixells_totals}`],
+    ["Casillas destapadas:", info.caselles_destapades],
+    ["Inicio:", info.data_inici],
+    ["Fin:", info.data_fi]
   ];
 
   datos.forEach(([label, valor]) => {
     const p = document.createElement("p");
-    p.appendChild(document.createTextNode(`${label} ${valor}`));
+    p.textContent = `${label} ${valor}`;
     estado_juego.appendChild(p);
   });
 }
 
 function actualizarEstadisticasVisuales(data) {
-  // Actualizar jugador
-  const jugador = document.getElementById("jugador");
-  const nuevoJugador = document.createTextNode(`Jugador: ${data.jugador}`);
-  if (jugador.firstChild) {
-    jugador.replaceChild(nuevoJugador, jugador.firstChild);
-  } else {
-    jugador.appendChild(nuevoJugador);
-  }
+  document.getElementById("jugador").textContent = `Jugador: ${data.jugador}`;
+  document.querySelector(".container h4").textContent = `Estado: ${data.estat}`;
 
-  // Actualizar estado
-  const estadoTexto = document.querySelector(".container h4");
-  const nuevoEstado = document.createTextNode(`Estado: ${data.estat}`);
-  if (estadoTexto.firstChild) {
-    estadoTexto.replaceChild(nuevoEstado, estadoTexto.firstChild);
-  } else {
-    estadoTexto.appendChild(nuevoEstado);
-  }
-
-  // Actualizar estadísticas
   const stats = document.querySelectorAll(".stat");
+  stats[0].textContent = `Hits: ${data.impactos_barco}`;
+  stats[1].textContent = `Misses: ${data.impactos_agua}`;
+  stats[2].textContent = `Ships Sunk: ${data.vaixells_enfonsats}`;
 
-  const nuevoHits = document.createTextNode(`Hits: ${data.impactos_barco}`);
-  if (stats[0].firstChild) {
-    stats[0].replaceChild(nuevoHits, stats[0].firstChild);
-  } else {
-    stats[0].appendChild(nuevoHits);
-  }
-
-  const nuevoMisses = document.createTextNode(`Misses: ${data.impactos_agua}`);
-  if (stats[1].firstChild) {
-    stats[1].replaceChild(nuevoMisses, stats[1].firstChild);
-  } else {
-    stats[1].appendChild(nuevoMisses);
-  }
-
-  const nuevoHundidos = document.createTextNode(`Ships Sunk: ${data.vaixells_enfonsats}`);
-  if (stats[2].firstChild) {
-    stats[2].replaceChild(nuevoHundidos, stats[2].firstChild);
-  } else {
-    stats[2].appendChild(nuevoHundidos);
-  }
-
-  // Actualizar jugadas
-  const jugadas = document.getElementById("jugadas");
-  const nuevoJugadas = document.createTextNode(data.caselles_destapades);
-  if (jugadas.firstChild) {
-    jugadas.replaceChild(nuevoJugadas, jugadas.firstChild);
-  } else {
-    jugadas.appendChild(nuevoJugadas);
-  }
+  document.getElementById("jugadas").textContent = data.caselles_destapades;
 }
