@@ -234,7 +234,7 @@ def volcarPartidaFinalizada(partida_id: str):
 # Crear la aplicación
 app = FastAPI(title="Mi Projecto", version="0.0.1")
 
-app.mount("/static", StaticFiles(directory="static"), name="static")
+#app.mount("/static", StaticFiles(directory="static"), name="static")
 
 # Endpoint principal
 @app.get("/")
