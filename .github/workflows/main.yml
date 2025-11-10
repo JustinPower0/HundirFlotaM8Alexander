@@ -1,38 +1,37 @@
-name: FastAPI + Ngrok Deployment
-
+name: Docker + Ngrok v3 Demo
 on:
-  push:
-    branches: [ main ]
   workflow_dispatch:
-
-env:
-  NGROK_AUTHTOKEN: ${{ secrets.NGROK_AUTHTOKEN }}
-
+  push:
+    branches:
+      - main
 jobs:
   deploy:
     runs-on: ubuntu-latest
-
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.11'
+      - name: Run Docker containers
+        run: docker compose up -d
 
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install fastapi uvicorn pyngrok
-
-    - name: Start FastAPI + Ngrok
-      run: |
-        # Levantar FastAPI en background
-        nohup uvicorn FastApi.main:app --host 0.0.0.0 --port 8000 &
-
-        # Esperar 5 segundos para que uvicorn arranque
-        sleep 5
-
-        # Levantar ngrok y mostrar URL pública
-        python -c "import os; from pyngrok import ngrok; ngrok.set_auth_token(os.environ['NGROK_AUTHTOKEN']); url = ngrok.connect(8000); print(f'🌐 Ngrok URL pública: {url}')"
+      - name: Install Ngrok v3
+        run: |
+          curl -sLo ngrok.zip https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3-stable-linux-amd64.zip
+          unzip -o ngrok.zip
+          sudo mv ngrok /usr/local/bin/
+          sudo chmod +x /usr/local/bin/ngrok
+          ngrok version
+      - name: Authenticate Ngrok
+        run: ngrok config add-authtoken ${{ secrets.NGROK_AUTHTOKEN }}
+      - name: Start Ngrok tunnel
+        id: ngrok
+        run: |
+          ngrok http 8080 --log=stdout > ngrok.log &
+          sleep 5
+          NGROK_URL=$(curl --silent http://127.0.0.1:4040/api/tunnels | grep -oP '"public_url":"\Khttps://[^"]+')
+          echo "NGROK_URL=$NGROK_URL" >> $GITHUB_ENV
+          echo "::notice title=URL pública::$NGROK_URL"
+          tail -f ngrok.log & wait
+      - name: Stop Docker containers
+        if: always()
+        run: docker compose down
