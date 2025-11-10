@@ -1,76 +1,37 @@
-name: FastAPI + JS Demo
-
+name: Docker + Ngrok v3 Demo
 on:
+  workflow_dispatch:
   push:
     branches:
       - main
-  workflow_dispatch:
-
 jobs:
   deploy:
     runs-on: ubuntu-latest
-
     steps:
-      # 1. Clonar el repositorio
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # 2. Configurar Python
-      - name: Setup Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.11'
+      - name: Run Docker containers
+        run: docker compose up -d
 
-      # 3. Instalar dependencias
-      - name: Install Python dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
-
-      # 4. Levantar FastAPI en background
-      - name: Start FastAPI server
-        working-directory: FastApi
-        run: |
-          echo "Iniciando FastAPI..."
-          uvicorn main:app --host 0.0.0.0 --port 8000 &
-          echo "Esperando a que FastAPI arranque..."
-          for i in {1..30}; do
-            if curl --silent --fail http://127.0.0.1:8000/ping; then
-              echo "FastAPI listo!"
-              break
-            fi
-            echo "FastAPI no listo, esperando 2s..."
-            sleep 2
-          done
-
-      # 5. Instalar Ngrok
       - name: Install Ngrok v3
         run: |
           curl -sLo ngrok.zip https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3-stable-linux-amd64.zip
           unzip -o ngrok.zip
           sudo mv ngrok /usr/local/bin/
-          sudo chmod +x /usr/local/bin/
+          sudo chmod +x /usr/local/bin/ngrok
           ngrok version
-
-      # 6. Autenticación Ngrok
       - name: Authenticate Ngrok
         run: ngrok config add-authtoken ${{ secrets.NGROK_AUTHTOKEN }}
-
-      # 7. Levantar túnel Ngrok
       - name: Start Ngrok tunnel
         id: ngrok
         run: |
-          ngrok http 8000 --log=stdout > ngrok.log &
+          ngrok http 8080 --log=stdout > ngrok.log &
           sleep 5
           NGROK_URL=$(curl --silent http://127.0.0.1:4040/api/tunnels | grep -oP '"public_url":"\Khttps://[^"]+')
           echo "NGROK_URL=$NGROK_URL" >> $GITHUB_ENV
           echo "::notice title=URL pública::$NGROK_URL"
-
-      # 8. Testear endpoints opcionalmente
-      - name: Test API endpoint
-        run: |
-          curl ${{ env.NGROK_URL }}/docs
-
-      # 9. Mantener job vivo mientras Ngrok corre
-      - name: Keep job alive
-        run: tail -f ngrok.log & wait
+          tail -f ngrok.log & wait
+      - name: Stop Docker containers
+        if: always()
+        run: docker compose down
