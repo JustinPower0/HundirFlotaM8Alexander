@@ -12,7 +12,8 @@ WORKDIR /app
 RUN pip install --no-cache-dir fastapi uvicorn
 
 # Copiar el código del proyecto
-COPY ./FastApi /app
+COPY ./FastApi/static ./static
+
 
 # Exponer el puerto donde uvicorn servirá FastAPI
 EXPOSE 8000

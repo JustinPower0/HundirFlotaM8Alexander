@@ -6,7 +6,8 @@ services:
     ports:
       - "8080:8000"
     volumes:
-      - ./FastApi:/app   # Mapea tu código para desarrollo
+      - ./FastApi/static:/app/static
+  # Mapea tu código para desarrollo
     working_dir: /app
     command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
     depends_on:

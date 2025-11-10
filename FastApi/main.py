@@ -6,6 +6,9 @@ import json
 import os
 from datetime import datetime
 
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
+
 partida = {}
 barcos_definicion = {
     "submari": {"id": 1, "longitud": 1},
@@ -169,9 +172,18 @@ def volcarPartidaFinalizada(partida_id: str):
 
 # Crear app FastAPI
 app = FastAPI(title="Mi Projecto", version="0.0.1")
+# Archivos estáticos
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
+# Endpoint raíz
+@app.get("/")
+def serve_html():
+    return FileResponse("static/index.html")
 
-
+# Endpoint de salud para GitHub Actions
+@app.get("/ping")
+def ping():
+    return {"status": "ok"}
 origins = ["http://localhost:5500","http://127.0.0.1:5500"]
 
 app.add_middleware(
