@@ -1,24 +1,38 @@
-name: Run FastAPI + ngrok
+name: FastAPI + Ngrok Deployment
 
 on:
+  push:
+    branches: [ main ]
   workflow_dispatch:
 
+env:
+  NGROK_AUTHTOKEN: ${{ secrets.NGROK_AUTHTOKEN }}
+
 jobs:
-  run:
+  deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+    - name: Checkout repository
+      uses: actions/checkout@v3
 
-      - name: Set up Docker Compose
-        run: docker compose version
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
 
-      - name: Build and run containers
-        env:
-          NGROK_AUTH_TOKEN: ${{ secrets.NGROK_AUTH_TOKEN }}
-        run: |
-          docker compose up -d
-          sleep 10
-          echo "Containers started"
-          docker logs $(docker ps -q --filter "ancestor=wernight/ngrok") | grep -Eo "https://[0-9a-z]+\.ngrok\.io"
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install fastapi uvicorn pyngrok
+
+    - name: Start FastAPI + Ngrok
+      run: |
+        # Levantar FastAPI en background
+        nohup uvicorn FastApi.main:app --host 0.0.0.0 --port 8000 &
+
+        # Esperar 5 segundos para que uvicorn arranque
+        sleep 5
+
+        # Levantar ngrok y mostrar URL pública
+        python -c "import os; from pyngrok import ngrok; ngrok.set_auth_token(os.environ['NGROK_AUTHTOKEN']); url = ngrok.connect(8000); print(f'🌐 Ngrok URL pública: {url}')"

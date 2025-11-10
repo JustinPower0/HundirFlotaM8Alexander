@@ -233,15 +233,13 @@ def volcarPartidaFinalizada(partida_id: str):
 
 # Crear la aplicación
 app = FastAPI(title="Mi Projecto", version="0.0.1")
-BASE_DIR = os.path.dirname(__file__)
 
-# Montar la misma carpeta como archivos estáticos
-app.mount("/static", StaticFiles(directory=BASE_DIR), name="static")
+app.mount("/static", StaticFiles(directory="FastApi"), name="static")
 
-# Servir index.html en la raíz
+# Endpoint principal
 @app.get("/")
-def serve_index():
-    return FileResponse(os.path.join(BASE_DIR, "index.html"))
+def index():
+    return FileResponse("FastApi/index.html")
 # Lista de orígenes permitidos
 origins = [
     "http://localhost:5500",  # si tu frontend corre aquí
