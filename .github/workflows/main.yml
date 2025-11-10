@@ -45,16 +45,14 @@ jobs:
     # 6️⃣ Iniciar FastAPI primero
     - name: Start FastAPI
       run: |
-       cd FastApi
-       nohup uvicorn main:app --host 0.0.0.0 --port 8000 > ../uvicorn.log 2>&1 &
-       sleep 10
-       echo "FastAPI app running on port 8000"
-
+        cd FastApi
+        nohup uvicorn main:app --host 0.0.0.0 --port 8000 > ../uvicorn.log 2>&1 &
+        sleep 10
+        echo "FastAPI app running on port 8000"
 
     # 7️⃣ Test de FastAPI (punto 4)
     - name: Test FastAPI
       run: curl http://127.0.0.1:8000/ping
-
 
     # 8️⃣ Iniciar Ngrok después de FastAPI
     - name: Start Ngrok
@@ -75,3 +73,7 @@ jobs:
         ps aux
         echo "Listening ports:"
         sudo netstat -tulpn
+
+    # 11️⃣ Mantener el workflow activo 10 minutos
+    - name: Keep alive for 10 minutes
+      run: sleep 600
