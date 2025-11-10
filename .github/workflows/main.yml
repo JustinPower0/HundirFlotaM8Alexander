@@ -35,14 +35,25 @@ jobs:
         echo "deb https://ngrok-agent.s3.amazonaws.com buster main" | sudo tee /etc/apt/sources.list.d/ngrok.list
         sudo apt update && sudo apt install -y ngrok jq net-tools
 
-    # 5️⃣ Crear ngrok.yml en la raíz con tu configuración
+    # 5️⃣ Crear ngrok.yml en la raíz con tu token secreto
     - name: Crear ngrok.yml
       run: |
         echo "version: 3" > ngrok.yml
         echo "agent:" >> ngrok.yml
-        echo "  authtoken: 34CKz6xfNWIcdM0fIIIo38b9sVo_whuep6gXsS3FN5ZhsChA" >> ngrok.yml
+        echo "  authtoken: ${{ secrets.NGROK_AUTHTOKEN }}" >> ngrok.yml
 
-    # 6️⃣ Iniciar Ngrok con el archivo de configuración
+    # 6️⃣ Iniciar FastAPI primero
+    - name: Start FastAPI
+      run: |
+        nohup uvicorn FastApi.main:app --host 0.0.0.0 --port 8000 > uvicorn.log 2>&1 &
+        sleep 10
+        echo "FastAPI app running on port 8000"
+
+    # 7️⃣ Test de FastAPI (punto 4)
+    - name: Test FastAPI
+      run: curl http://127.0.0.1:8000/ping
+
+    # 8️⃣ Iniciar Ngrok después de FastAPI
     - name: Start Ngrok
       run: |
         nohup ngrok http 8000 --config ngrok.yml > ngrok.log 2>&1 &
@@ -50,18 +61,11 @@ jobs:
         NGROK_URL=$(curl --silent http://localhost:4040/api/tunnels | jq -r '.tunnels[0].public_url')
         echo "NGROK_URL=${NGROK_URL}" >> $GITHUB_ENV
 
-    # 7️⃣ Mostrar la URL pública
+    # 9️⃣ Mostrar la URL pública
     - name: Print Ngrok URL
-      run: echo "Your public URL is ${{ env.NGROK_URL }}"
+      run: echo "Your public URL is $NGROK_URL"
 
-    # 8️⃣ Iniciar FastAPI en segundo plano
-    - name: Start FastAPI
-      run: |
-        nohup uvicorn FastApi.main:app --host 0.0.0.0 --port 8000 > uvicorn.log 2>&1 &
-        sleep 10
-        echo "FastAPI app running on port 8000"
-
-    # 9️⃣ Debug (opcional)
+    # 🔟 Debug opcional
     - name: Debug Info
       run: |
         echo "Running processes:"
