@@ -1,37 +1,24 @@
-name: Docker + Ngrok v3 Demo
+name: Run FastAPI + ngrok
+
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - main
+
 jobs:
-  deploy:
+  run:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout repository
+      - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Run Docker containers
-        run: docker compose up -d
+      - name: Set up Docker Compose
+        run: docker compose version
 
-      - name: Install Ngrok v3
+      - name: Build and run containers
+        env:
+          NGROK_AUTH_TOKEN: ${{ secrets.NGROK_AUTH_TOKEN }}
         run: |
-          curl -sLo ngrok.zip https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3-stable-linux-amd64.zip
-          unzip -o ngrok.zip
-          sudo mv ngrok /usr/local/bin/
-          sudo chmod +x /usr/local/bin/ngrok
-          ngrok version
-      - name: Authenticate Ngrok
-        run: ngrok config add-authtoken ${{ secrets.NGROK_AUTHTOKEN }}
-      - name: Start Ngrok tunnel
-        id: ngrok
-        run: |
-          ngrok http 8080 --log=stdout > ngrok.log &
-          sleep 5
-          NGROK_URL=$(curl --silent http://127.0.0.1:4040/api/tunnels | grep -oP '"public_url":"\Khttps://[^"]+')
-          echo "NGROK_URL=$NGROK_URL" >> $GITHUB_ENV
-          echo "::notice title=URL pública::$NGROK_URL"
-          tail -f ngrok.log & wait
-      - name: Stop Docker containers
-        if: always()
-        run: docker compose down
+          docker compose up -d
+          sleep 10
+          echo "Containers started"
+          docker logs $(docker ps -q --filter "ancestor=wernight/ngrok") | grep -Eo "https://[0-9a-z]+\.ngrok\.io"

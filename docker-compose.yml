@@ -1,14 +1,17 @@
+version: "3.9"
+
 services:
-  web:
+  fastapi:
     build: .
     ports:
-      - "8080:80"
-    volumes:
-      - ./Programa:/var/www/html
-  db:
-    image: mysql:8
+      - "8000:8000"
+    container_name: fastapi_app
+
+  ngrok:
+    image: wernight/ngrok
+    depends_on:
+      - fastapi
     environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: demo
-      MYSQL_USER: user
-      MYSQL_PASSWORD: password
+      - NGROK_AUTHTOKEN=${NGROK_AUTH_TOKEN}
+      - NGROK_REGION=us
+    command: http fastapi:8000

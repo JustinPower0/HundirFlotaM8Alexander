@@ -6,6 +6,9 @@ import json
 import os
 from datetime import datetime
 
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
+
 # Variable
 partida = {}
 matriz = []
@@ -231,9 +234,13 @@ def volcarPartidaFinalizada(partida_id: str):
 # Crear la aplicación
 app = FastAPI(title="Mi Projecto", version="0.0.1")
 
+frontend_path = os.path.join(os.path.dirname(__file__), "../Programa")
+app.mount("/static", StaticFiles(directory=frontend_path), name="static")
+
+
 @app.get("/")
-def home():
-    return {"mensaje": "Servidor FastAPI funcionando correctamente"}
+def serve_index():
+    return FileResponse(os.path.join(frontend_path, "index.html"))
 
 # Lista de orígenes permitidos
 origins = [
