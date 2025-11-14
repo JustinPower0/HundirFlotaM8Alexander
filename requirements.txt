@@ -4,3 +4,4 @@ pydantic
 sqlalchemy
 mysqlclient
 python-dotenv
+pyngrok
